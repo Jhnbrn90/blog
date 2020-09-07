@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,600&display=swap');
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-weight: 400;
+    background: rgb(255,255,255);
+    background: linear-gradient(90deg, rgba(255,255,255,1) 1%, rgba(246,246,246,1) 37%, rgba(245,245,245,1) 100%);
+}
+
+a {
+    @apply .text-blue-600
+}
+
+a:hover {
+    @apply .text-blue-300 .underline
+}
+
+h1 {
+    @apply .text-3xl .text-black .py-4 .font-semibold
+}
+
+h2 {
+    @apply .text-black .pt-4 .pb-1 .text-xl .font-semibold
+}
+
+h3 {
+    @apply .text-black .py-2 .font-semibold
+}
+
+p {
+    @apply .pt-1 .pb-2
+}
+
+strong {
+    font-weight: 600;
+}
+
+blockquote {
+    @apply .pl-2 .border-l-2 .border-gray-500 .italic .text-sm
+}
+
+.embedded_image>p {
+    @apply .text-center .text-sm .italic .text-gray-800 .leading-loose
+}
+
+.embedded_image>div{
+    @apply .flex .flex-wrap .justify-center
+}
+
+.embedded_image {
+    @apply .my-6
+}
+
+.embedded_image>img {
+    display: block;
+    margin: 0 auto;
+    @apply .border .py-2
+}
+
+p {
+    @apply .mb-2 .text-gray-700
+}
+
+code {
+    @apply .bg-red-100 .text-red-700 .px-1 .rounded-lg .text-sm
+}
+
+ul {
+    list-style: none;
+    @apply .py-2 .text-left
+}
+
+ul > li {
+    @apply .mb-2
+}
+
+pre {
+    overflow-x: auto;
+    line-height: 1.6;
+    font-size: 0.8rem;
+    @apply .w-full .my-4 .bg-white .border .border-gray-300 .rounded .py-2 .px-3 .shadow
+}
+
+hr {
+    margin-top: 2rem;
+    overflow: visible; /* For IE */
+    height: 30px;
+    border-style: solid;
+    border-color: #CBD5E0;
+    border-width: 1px 0 0 0;
+    border-radius: 20px;
+}
+
+hr:before {
+    display: block;
+    content: "";
+    height: 30px;
+    margin-top: -31px;
+    border-style: solid;
+    border-color: #CBD5E0;
+    border-width: 0 0 1px 0;
+    border-radius: 20px;
+}
+
+@screen sm {
+    h2 {
+        @apply .text-2xl
+    }
+}
+
