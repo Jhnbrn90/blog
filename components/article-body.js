@@ -6,7 +6,7 @@ const CodeBlock = ({ language, value }) => {
     return <SyntaxHighlighter language={language} style={materialDark}>{value}</SyntaxHighlighter>;
 };
 
-export default function ArticleBody({ title, date, content}) {
+export default function ArticleBody({ title, date, content, slug, cover}) {
     return (
         <article className="flex mx-auto flex-col mb-10 rounded bg-white shadow-lg sm:px-12 px-12 py-4">
             <div className="text-sm text-gray-600 font-thin">
@@ -22,7 +22,7 @@ export default function ArticleBody({ title, date, content}) {
 
                 <div className="flex justify-center">
                     <div className="flex flex-col items-center">
-                        {/*<img className="max-w-md h-56 mb-4 rounded-t-lg" src="/images/posts/" />*/}
+                        <img className="max-w-md h-56 mb-4 rounded-t-lg" src={`/images/posts/${slug}/${cover}`} />
                     </div>
                 </div>
             </div>

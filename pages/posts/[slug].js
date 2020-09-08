@@ -3,7 +3,7 @@ import {getSlugs, getPostBySlug} from "../../lib/posts";
 import ArticleBody from '../../components/article-body'
 import Layout from "../../components/Layout";
 
-export default function Post({post, frontmatter}) {
+export default function Post({post, frontmatter, slug}) {
     return (
         <>
             <Layout>
@@ -14,7 +14,9 @@ export default function Post({post, frontmatter}) {
                 <ArticleBody
                     title={frontmatter.title}
                     date={frontmatter.date}
+                    cover={frontmatter.cover}
                     content={post.content}
+                    slug={slug}
                 />
             </Layout>
         </>
@@ -33,5 +35,11 @@ export async function getStaticPaths() {
 export async function getStaticProps({params: {slug}}) {
     const postData = getPostBySlug(slug);
 
-    return {props: postData};
+    return {
+        props: {
+            post: postData.post,
+            frontmatter: postData.frontmatter,
+            slug: slug
+        }
+    };
 }
