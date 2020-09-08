@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown/with-html";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { materialOceanic as theme } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { atomOneLight as theme } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 const CodeBlock = ({ language, value }) => {
     return <SyntaxHighlighter language={language} style={theme}>{value}</SyntaxHighlighter>;
