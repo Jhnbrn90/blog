@@ -6,17 +6,17 @@ description: 'When writing an end-to-end test (or so called browser test), it mi
 ---
 
 ## Introduction
-Recently, I wanted to write a Cypress.io acceptance ("end-to-end") test for a Laravel project where I wanted `Carbon::now()` to return a specific (fake) date, so I could act as if it were that specific date in my browser test. 
+Recently, I wanted to write a [Cypress](https://cypress.io) acceptance ("end-to-end") test for a Laravel project where I wanted `Carbon::now()` to return a specific (fake) date, so I could act as if it were that specific date in my browser test.
 
 Initially, I thought I could just set `Carbon::setTestNow()`, however this would only survive a single request and I wanted the custom date I specified to be applied globally in the application to make assertions about several endpoints within these tests.
 
-After a few online searches, I decided to ask for help [on Twitter](https://twitter.com/JhnBrn90/status/1302680650860855297) and got a reply by [@sasin91](https://twitter.com/sasin91) which sparked a new idea: I could use a middleware 💡.
+After a few online searches, I decided to ask for help [on Twitter](https://twitter.com/JhnBrn90/status/1302680650860855297) and got a reply from [@sasin91](https://twitter.com/sasin91) which sparked a new idea: perhaps I could use a middleware 💡.
 
 Eventually, I ended up using the following setup.
 
-## Strategy
-### 1. Adding a new  `SetTestDate` middleware
-First, I created a new middleware called `SetTestDate` and registered this middleware in the 'web' middleware group. 
+## The middleware approach
+### Adding a new middleware
+First, I created a new middleware called `SetTestDate` and registered this middleware in the 'web' middleware group.
 
 ```php
 // 'app/Http/Kernel.php'
@@ -108,9 +108,13 @@ it('shows the current date', () => {
 })
 ```
 
-
 ## Conclusion
-It is possible to manipulate the current date in Laravel _end-to-end_ tests using a middleware that accepts a fake date as request parameter and sets a **session variable** to persist the fake date by calling `Carbon::setTestNow()` for subsequent requests. 
+It is possible to manipulate the current date in Laravel *end-to-end* tests using a middleware that accepts a *fake date* as request parameter and sets a **session variable** to persist the fake date by calling `Carbon::setTestNow()` for subsequent requests.
 
-When using Cypress, I make use of the [laracasts/cypress](https://github.com/laracasts/cypress) helper package.
-To learn more about Cypress, I can highly recommend [this video series](https://laracasts.com/series/cypress-and-laravel-integration) on Laracasts.
+When using Cypress in a Laravel application, make sure to checkout out the [laracasts/cypress](https://github.com/laracasts/cypress) helper package.
+
+To learn more about Cypress in the context of Laravel applications, I can highly recommend [this video series](https://laracasts.com/series/cypress-and-laravel-integration) on Laracasts.
+
+---
+
+Photo by [Aron Visuals](https://unsplash.com/@aronvisuals?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/s/photos/date-time?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
