@@ -21,7 +21,7 @@ export default function SEO({ title, description = "", image = null }) {
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={metaDescription} />
             <meta name="twitter:creator" content={siteMetadata.social.twitter} />
-            <meta name="twitter:image" content={`/images/${image}`} />
+            <meta name="twitter:image" content={`${siteMetadata.siteUrl}/images/${image}`} />
 
             <link rel="icon" type="image/png" href="/static/favicon.ico" />
             <link rel="apple-touch-icon" href="/static/favicon.ico" />
