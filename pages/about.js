@@ -2,13 +2,12 @@ import Head from "next/head";
 import Navigation from "../components/navigation";
 import {getAboutPage} from "../lib/about";
 import ReactMarkdown from "react-markdown/with-html";
+import SEO from "../components/seo";
 
 export default function About({content}) {
     return (
         <>
-            <Head>
-                <title>About | John Braun</title>
-            </Head>
+            <SEO title="About | John Braun" />
 
             <Navigation />
 

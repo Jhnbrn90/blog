@@ -1,14 +1,13 @@
 import ArticleList from '../components/article-list'
 import {getSortedPosts} from "../lib/posts";
-import Layout from "../components/Layout";
+import Layout from "../components/layout";
+import SEO from "../components/seo";
 
 export default function Home({posts}) {
     return (
         <>
             <Layout>
-                <Head>
-                    <title>John Braun | weblog</title>
-                </Head>
+                <SEO title="John Braun | weblog" />
 
                 <ArticleList posts={posts}/>
             </Layout>

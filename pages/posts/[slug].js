@@ -1,15 +1,18 @@
 import Head from 'next/head'
 import {getSlugs, getPostBySlug} from "../../lib/posts";
 import ArticleBody from '../../components/article-body'
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout";
+import SEO from "../../components/seo";
 
 export default function Post({post, frontmatter, slug}) {
     return (
         <>
             <Layout>
-                <Head>
-                    <title>{frontmatter.title} | John Braun</title>
-                </Head>
+                <SEO
+                    title={frontmatter.title}
+                    description={frontmatter.description || post.excerpt}
+                    image={`posts/${slug}/${frontmatter.cover}`}
+                />
 
                 <ArticleBody
                     title={frontmatter.title}
