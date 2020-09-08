@@ -45,30 +45,18 @@ blockquote {
     @apply .pl-2 .border-l-2 .border-gray-500 .italic .text-sm
 }
 
-.embedded_image>p {
-    @apply .text-center .text-sm .italic .text-gray-800 .leading-loose
-}
-
-.embedded_image>div{
-    @apply .flex .flex-wrap .justify-center
-}
-
-.embedded_image {
-    @apply .my-6
-}
-
-.embedded_image>img {
-    display: block;
-    margin: 0 auto;
-    @apply .border .py-2
-}
-
 p {
     @apply .mb-2 .text-gray-700
 }
 
 code {
     @apply .bg-red-100 .text-red-700 .px-1 .rounded-lg .text-sm
+}
+
+pre {
+    font-size: 0.85rem !important;
+    line-height: 1.6 !important;
+    @apply .w-full .my-4 .bg-white .border .border-gray-300 .rounded .py-2 .px-3 .shadow
 }
 
 ul {
@@ -78,13 +66,6 @@ ul {
 
 ul > li {
     @apply .mb-2
-}
-
-pre {
-    overflow-x: auto;
-    line-height: 1.6;
-    font-size: 0.8rem;
-    @apply .w-full .my-4 .bg-white .border .border-gray-300 .rounded .py-2 .px-3 .shadow
 }
 
 hr {

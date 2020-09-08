@@ -38,22 +38,3 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
         </article>
     )
 }
-
-// export default function ArticleBody({ title, date, content}) {
-//     return (
-//         <article>
-//             <header className="mb-8">
-//                 <h1 className="mb-2 text-6xl font-black leading-none font-display">
-//                     {title}
-//                 </h1>
-//                 <p className="text-sm">{date}</p>
-//             </header>
-//             <ReactMarkdown
-//                 className="mb-4 prose-sm prose sm:prose lg:prose-lg"
-//                 escapeHtml={false}
-//                 source={content}
-//                 renderers={{ code: CodeBlock}}
-//             />
-//         </article>
-//     )
-// }
