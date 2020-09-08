@@ -1,5 +1,3 @@
-import Head from 'next/head'
-import Navigation from '../components/navigation'
 import ArticleList from '../components/article-list'
 import {getSortedPosts} from "../lib/posts";
 import Layout from "../components/Layout";
