@@ -7,7 +7,10 @@ export default function Home({posts}) {
     return (
         <>
             <Layout>
-                <SEO title="John Braun | weblog" />
+                <SEO
+                    title="John Braun | weblog"
+                    image="/profile/profile_resized.png"
+                />
 
                 <ArticleList posts={posts}/>
             </Layout>
