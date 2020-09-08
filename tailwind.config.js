@@ -3,6 +3,10 @@ module.exports = {
     './pages/**/*.js',
     './components/**/*.js'
   ],
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
+  },
   theme: {
     extend: {},
   },
