@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;600&display=swap');
 
 body {
     font-family: 'Open Sans', sans-serif;
@@ -22,19 +23,19 @@ a:hover {
 }
 
 h1 {
-    @apply .text-3xl .text-black .py-4 .font-semibold
+    @apply .text-3xl .text-gray-800 .py-4 .font-semibold
 }
 
 h2 {
-    @apply .text-black .pt-4 .pb-1 .text-xl .font-semibold
+    @apply .text-gray-800 .pt-4 .pb-1 .text-xl .font-semibold
 }
 
 h3 {
-    @apply .text-black .py-2 .font-semibold
+    @apply .text-gray-800 .py-2 .font-semibold
 }
 
 p {
-    @apply .pt-1 .pb-2
+    @apply .pt-1 .pb-2 .mb-2 .text-gray-700
 }
 
 strong {
@@ -45,13 +46,14 @@ blockquote {
     @apply .pl-2 .border-l-2 .border-gray-500 .italic .text-sm
 }
 
-p {
-    @apply .mb-2 .text-gray-700
+p > code, li > code {
+    @apply .bg-red-100 .text-red-700 .px-1 .rounded-lg .text-sm
 }
 
 code {
-    @apply .bg-red-100 .text-red-700 .px-1 .rounded-lg .text-sm
+    font-family: 'Menlo';
 }
+
 
 pre {
     font-size: 0.85rem !important;
@@ -65,7 +67,20 @@ ul {
 }
 
 ul > li {
+    list-style: disc;
     @apply .mb-2
+}
+
+ol {
+    list-style: numeric;
+}
+
+ol,ul {
+    @apply .ml-10
+}
+
+p > img {
+    @apply .mt-4 .mb-3 .border
 }
 
 hr {
