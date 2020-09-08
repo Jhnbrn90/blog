@@ -1,9 +1,9 @@
 import ReactMarkdown from "react-markdown/with-html";
-import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
-import {materialDark} from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { materialOceanic as theme } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const CodeBlock = ({ language, value }) => {
-    return <SyntaxHighlighter language={language} style={materialDark}>{value}</SyntaxHighlighter>;
+    return <SyntaxHighlighter language={language} style={theme}>{value}</SyntaxHighlighter>;
 };
 
 export default function ArticleBody({ title, date, content, slug, cover}) {
