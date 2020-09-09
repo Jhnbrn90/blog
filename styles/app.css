@@ -2,12 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;600&display=swap');
 
 body {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 1.1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
     line-height: 1.5;
     font-weight: 400;
     background: rgb(255,255,255);
@@ -57,8 +56,9 @@ code {
 
 pre {
     font-size: 0.85rem !important;
-    line-height: 1.6 !important;
-    @apply .w-full .my-4 .bg-white .border .border-gray-300 .rounded .py-2 .px-3 .shadow
+    line-height: 1.7 !important;
+    padding: 1.3em !important;
+    @apply .w-full .my-4 .bg-white .rounded .py-4 .px-3
 }
 
 ul {
@@ -110,14 +110,3 @@ hr:before {
     }
 }
 
-/* Styles for lazy loaded images */
-.blur-up {
-    -webkit-filter: blur(5px);
-    filter: blur(5px);
-    transition: filter 500ms ease-in, -webkit-filter 500ms ease-in;
-}
-
-.blur-up.lazyloaded {
-    -webkit-filter: blur(0);
-    filter: blur(0);
-}

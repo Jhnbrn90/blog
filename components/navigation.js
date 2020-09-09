@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Navigation() {
     return (
-        <header className="mb-10 pb-5 pt-8 shadow-lg bg-white px-10">
+        <header className="sm:mb-10 sm:pb-5 sm:pt-8 sm:shadow-lg bg-white px-10">
             <div className="flex container mx-auto lg:max-w-screen">
-                <h1 className="flex w-full text-xl">
+                <h1 className="flex w-full text-xl items-center sm:items-baseline">
                     <div className="w-full text-center">
                         <img className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
                              src="/images/profile/profile_resized.png" />
@@ -27,7 +27,7 @@ export default function Navigation() {
                         </div>
 
                     </div>
-                    <div className="flex flex-1 justify-end">
+                    <div className="flex flex-1 justify-end text-xs sm:text-normal md:text-xl">
                         <Link href="/about">
                             <a className="no-underline text-black font-semibold">
                                 //<span className="text-sm font-thin">about</span>
