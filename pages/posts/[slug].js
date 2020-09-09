@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import {getSlugs, getPostBySlug} from "../../lib/posts";
 import ArticleBody from '../../components/article-body'
 import Layout from "../../components/layout";

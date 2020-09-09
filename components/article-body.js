@@ -11,7 +11,8 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
     const MarkdownImage = ({ alt, src }) => (
         <Image
             alt={alt}
-            src={require(`../public/images/posts/${slug}/${src}`)}
+            src={require(`../content/assets/posts/${slug}/${src}`)}
+            previewSrc={require(`../content/assets/posts/${slug}/${src}?webp`)}
             className="w-full"
         />
     );
