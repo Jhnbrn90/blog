@@ -4,8 +4,7 @@ You can find me on [Twitter](https://twitter.com/@jhnbrn90), [LinkedIn,](https:/
 
 Previously, I did my PhD research in Organic Chemistry within the [Sythetic & BioOrganic Chemistry group](http://syborch.com) (SyBOrCh) at the [Vrije Universiteit Amsterdam](http://www.vu.nl).
 
-How I got into programming
---------------------------
+## How I got into programming
 
 ### Chemistry
 
