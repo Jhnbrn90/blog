@@ -15,11 +15,11 @@ As you might know, I am an organic chemist in the SyBOrCh ("Synthetic & BioOrgan
 
 Long story short, I have made several web applications (depicted in the screenshot of the intranet page below), enhancing the workflow of our teams including two databases storing our chemicals.
 
-![SyBOrCh homepage](/images/posts/search-database-by-email/homepage.png)
+![SyBOrCh homepage](homepage.png)
 
 In our department we share the floor with two other chemistry groups and we have these two databases in common that contain information about the chemicals we use (location, properties, quantities, etc.). 
 
-![Chemicals Database](/images/posts/search-database-by-email/chemicals-database.png
+![Chemicals Database](chemicals-database.png)
 )
 
 When planning an experiment, it is important to know which chemicals are in stock (in both databases).
@@ -118,7 +118,7 @@ Following [my previous blog](https://johnbraun.blog/posts/incoming-mail-laravel-
 
 Following [my previous blog](https://johnbraun.blog/posts/incoming-mail-laravel-mailbox) on the Laravel Mailbox package, I found out that when using Mailgun, the webhook was not called. I didn't figure out the exact reason, but I also needed to enable "**forwarding**" (on top of the "Store and notify" option) in Mailgun and use the same webhook URL as mentioned. After enabling this option, everything worked as expected.
 
-![Mailgun - Forwarding Rule](/images/posts/search-database-by-email/forwarding-rule.png)
+![Mailgun - Forwarding Rule](forwarding-rule.png)
 
 In the "intermediate application", I listen for e-mails sent to 'syborch@[a-certain-address].com' and 'medchem@[a-certain-address].com' which have different handlers, storing the `ReceivedMail` models and setting the appropriate 'group'.
 
@@ -139,7 +139,7 @@ Our research group can now send an enter-separated "grocery list" to either one 
 
 Example of the e-mail reply from the database:
 
-![Example e-mail](/images/posts/search-database-by-email/email-example.png)
+![Example e-mail](email-example.png)
 
 ### Cronjob
 

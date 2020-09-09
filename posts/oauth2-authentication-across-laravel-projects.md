@@ -13,7 +13,7 @@ In this post I try to explain how to achieve this infrastructure, by creating a 
 
 In this way, users will be able to login to the child applications without creating a new, separate account.
 
-![Authorization request (Laravel Passport)](/images/posts/oauth2-authentication-across-laravel-projects/authorization-request.png)
+![Authorization request (Laravel Passport)](authorization-request.png)
 
 If you're not yet familiar with the OAuth2 protocol, I've included a section on the how and what below. 
 
@@ -56,7 +56,7 @@ First, let's look at the formal roles in OAuth2:
 
 The OAuth 2.0 protocol performs a standard communication flow between **Client** and **Resource Server**, where each step and given/required parameters are defined in advance. Ultimately, the **Client** receives the Bearer **access token** from the **Resource server**. This process is illustrated in the figure below (created using [draw.io](https://draw.io)). Note: it is assumed that the **Client** (third party application) is registered with the **Resource Server**.
 
-![The OAuth authorization flow](/images/posts/oauth2-authentication-across-laravel-projects/oauth-scheme.png)
+![The OAuth authorization flow](oauth-scheme.png)
 
 After this little "dance", the **Client** now possesses an **access token** which can either be long-lived or short-lived (more secure). If the access token is **short-lived**, the **Resource Server** will also provide a **refresh token** which can be used - in combination with the **client secret** - to obtain a new access token in a way resembling Step 3 in the diagram above. *Note: the "state" parameter is used to prevent CSRF related attacks, by verifying the request is not forged.*
 
@@ -76,11 +76,11 @@ Follow the clear [installation instructions](https://laravel.com/docs/6.x/passpo
 
 After installation, you now have the possiblity to add new **Clients** having a **callback url** and an automatically generated **secret**. For each of the "child" applications (`app1.example.com`, `app2.example.com`, etc.) you need to create a new **Client** with their own callback, for now you might choose `https://app1.example.com/login/callback` for example (we will come back to this).
 
-![Creating a new Client in Laravel Passport](/images/posts/oauth2-authentication-across-laravel-projects/create-client.png)
+![Creating a new Client in Laravel Passport](create-client.png)
 
 Laravel Passport will take care of the authorization dialog, providing an authorization code, verifying the client secret in combination with the authorization code and lastly provide a `User` object and (by default) a **long-lived** access token. The lifespan of the access and refresh tokens are [configurable](https://laravel.com/docs/6.x/passport#token-lifetimes).
 
-![Example of a Client having an ID and a secret (in Laravel Passport)](/images/posts/oauth2-authentication-across-laravel-projects/client-keys.png)
+![Example of a Client having an ID and a secret (in Laravel Passport)](client-keys.png)
 
 ---
 
@@ -114,7 +114,7 @@ Now, this seems like a lot of steps to repeat for every **Client** application w
 
 ## Socialite-Passport package
 
-![](/images/posts/oauth2-authentication-across-laravel-projects/passport-socialite-repository.png)
+![](passport-socialite-repository.png)
 
 In a **Client** Laravel application that you want to couple to the Passport **Resource Server**, first install the custom ['socialite-passport' package](https://github.com/jhnbrn90/socialite-passport):
 

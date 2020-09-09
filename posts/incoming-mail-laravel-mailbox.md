@@ -41,7 +41,7 @@ Mailgun offers a **Free plan** which allows you to send 10 000 e-mails / month, 
 
 Visit the *domains* page in the *Sending* menu section and choose *Add your domain*. Mailgun will suggest you to use a **subdomain** like *mg.example.com*. However, if we want to be able to receive e-mails on info@example.com (instead of info@mg.example.com) we'll need to ***ignore******the red warning*** and register *example.com*. Choose your region (EU / US) and confirm.
 
-![Warning that we're not using a subdomain](/images/posts/incoming-mail-laravel-mailbox/mailgun-warning.png)
+![Warning that we're not using a subdomain](mailgun-warning.png)
 
 ### Setting up DNS records
 
@@ -55,7 +55,7 @@ Those are (most probably) managed by the company you've registered your domain n
 
 As long as your registrar supports manual configuration of the DNS records it doesn't matter which company you choose. Personally, I use [Hover](https://www.hover.com) for registration of my **domains** and [DigitalOcean](https://www.digitalocean.com) to mange the **DNS settings** (by directing the nameservers to DigitalOcean) since my **server** lives there as well.
 
-![DNS records](/images/posts/incoming-mail-laravel-mailbox/DNS-records.png)
+![DNS records](DNS-records.png)
 
 Check out these guides for specific configuring of **DNS records** at [GoDaddy](https://www.godaddy.com/help/manage-dns-zone-files-680), [NameCheap](https://www.namecheap.com/support/knowledgebase/article.aspx/579/2237/which-record-type-option-should-i-choose-for-the-information-im-about-to-enter), [Network Solutions](http://www.networksolutions.com/support/how-to-manage-advanced-dns-records/), [Rackspace Email & Apps](https://support.rackspace.com/how-to/set-up-dns-records-for-cloud-office-email/), [Rackspace Cloud DNS](https://support.rackspace.com/how-to/creating-dns-records-with-cloud-dns/), [Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-creating.html) and [Digital Ocean](https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/).
 
@@ -63,25 +63,25 @@ Check out these guides for specific configuring of **DNS records** at [GoDaddy](
 
 To be able to send e-mail with Mailgun, you'll need to configure two TXT records.
 
-![Expected TXT records](/images/posts/incoming-mail-laravel-mailbox/expected-TXT-records.png)
+![Expected TXT records](expected-TXT-records.png)
 
 First, using the root hostname (using an "@" in DigitalOcean) with the value "`v=spf1 include:eu.mailgun.org ~all`".
 
-![Adding root TXT record](/images/posts/incoming-mail-laravel-mailbox/root-TXT-record.png)
+![Adding root TXT record](root-TXT-record.png)
 
 The second TXT record indicates your domain key using the provided subdomain prefix, "**mailo._domainkey**" in the example below. The specific subdomain you'll need to create will vary.
 
-![Adding domain key TXT record](/images/posts/incoming-mail-laravel-mailbox/domain-TXT-record.png)
+![Adding domain key TXT record](domain-TXT-record.png)
 
 ### MX records
 
 Next, to be able to receive e-mails, we'll need to add two MX records.
 
-![Expected MX records](/images/posts/incoming-mail-laravel-mailbox/expected-MX-records.png) 
+![Expected MX records](expected-MX-records.png) 
 
 Since we're not using a subdomain, we'll add those MX records on our root hostname, which is shown below (for DigitalOcean). **Important:** if you **do** use a subdomain, you'll need to configure the MX records for the subdomain.
 
-![Adding MX records](/images/posts/incoming-mail-laravel-mailbox/adding-MX-records.png)
+![Adding MX records](adding-MX-records.png)
 
 Repeat this step for the other (**mxb**.eu.mailgun.org) MX record.
 
@@ -89,9 +89,9 @@ Repeat this step for the other (**mxb**.eu.mailgun.org) MX record.
 
 Lastly, add a CNAME record for the "email" subdomain: 
 
-![Expected CNAME record](/images/posts/incoming-mail-laravel-mailbox/expected-CNAME-record.png)
+![Expected CNAME record](expected-CNAME-record.png)
 
-![Adding CNAME record](/images/posts/incoming-mail-laravel-mailbox/adding-CNAME-record.png)
+![Adding CNAME record](adding-CNAME-record.png)
 
 ### Verify DNS Settings
 
@@ -340,7 +340,7 @@ We're almost ready to receive inbound e-mails on our domain, we just need to con
 
 In Mailgun, hit up the "receiving" link in the menu and choose "create route". Here we can specify to either catch all e-mails, or a selection. Let's only catch e-mails sent to "incoming@johnbraun.blog".
 
-![Route for incoming mail](/images/posts/incoming-mail-laravel-mailbox/route-incoming-mail.png)
+![Route for incoming mail](route-incoming-mail.png)
 
 Check "store and notify" and fill in the endpoint for the Mailgun driver (as [described here](https://docs.beyondco.de/laravel-mailbox/1.0/drivers/drivers.html#mailgun)): `https://****your domain****/laravel-mailbox/mailgun/mime`. Give your route a description and hit the create button.
 
@@ -358,7 +358,7 @@ MAILGUN_SECRET=........
 MAILGUN_ENDPOINT="api.eu.mailgun.net"
 ```
 
-![API settings page](/images/posts/incoming-mail-laravel-mailbox/API-settings.png)
+![API settings page](API-settings.png)
 
 ## Ready for action!
 

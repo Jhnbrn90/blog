@@ -22,7 +22,7 @@ The basic flow of the application is as follows.
 1. The other users then get to choose a card - indicating their estimation in hours - and save their estimation.
 1. After the product owner stops the estimation, all users get to see what the others have voted.
 
-![Estimation flow](/images/posts/refactoring-to-livewire-polling/workflow.gif)
+![Estimation flow](workflow.gif)
 
 To this extend, we've created three Livewire components:
 

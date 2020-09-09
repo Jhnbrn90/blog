@@ -1,4 +1,3 @@
-import Head from "next/head";
 import Navigation from "../components/navigation";
 import {getAboutPage} from "../lib/about";
 import ReactMarkdown from "react-markdown/with-html";

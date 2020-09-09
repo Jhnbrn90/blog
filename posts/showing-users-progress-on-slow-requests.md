@@ -9,7 +9,7 @@ description: 'Sometimes in your web application you will need to perform some (r
 
 Recently, I got inspired by [this tweet](https://twitter.com/m1guelpf/status/1170010256480645122) by Miguel Piedrafita in which he stresses the importance of including some form of progress indicators whenever your application needs to perform one or more slow (background) tasks/processes. In his example, the users' website needs to be saved to a database, added to a deployment platform and dispatched for first deploy.
 
-![Showing the user what's going on](/images/posts/showing-users-progress-on-slow-requests/progress.png)
+![Showing the user what's going on](progress.png)
 
 Like Miguel mentions, by adding small indicators to each of these running processes your users are reassured something is happening and they just need to be patient.
 
@@ -25,7 +25,7 @@ Since we'll need to update the progress in realtime, I like to defer to **VueJS*
 
 Ultimately we want to display a list of tasks, which are processed *sequentially.* To this extent we'll leverage javascript's `async/await` functionality. Additionally, the tasks should indicate whenever they're finished and show an [epic spinner](https://epic-spinners.epicmax.co/#/) (by [Epicmax](https://epicmax.co/)) in the meantime. An example of our desired end result is shown below:
 
-![Process Indicators](/images/posts/showing-users-progress-on-slow-requests/process-indicators.gif)
+![Process Indicators](process-indicators.gif)
 
 ### Object representation of a single process
 

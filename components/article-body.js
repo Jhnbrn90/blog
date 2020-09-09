@@ -1,12 +1,21 @@
 import ReactMarkdown from "react-markdown/with-html";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneLight as theme } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
+import Image from "./image";
 
 const CodeBlock = ({ language, value }) => {
     return <SyntaxHighlighter language={language} style={theme}>{value}</SyntaxHighlighter>;
 };
 
 export default function ArticleBody({ title, date, content, slug, cover}) {
+    const MarkdownImage = ({ alt, src }) => (
+        <Image
+            alt={alt}
+            src={require(`../public/images/posts/${slug}/${src}`)}
+            className="w-full"
+        />
+    );
+
     return (
         <article className="flex mx-auto flex-col mb-10 rounded bg-white shadow-lg sm:px-12 px-12 py-4">
             <div className="flex justify-between text-sm text-gray-600 font-thin">
@@ -39,7 +48,7 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
                     className="mb-4 prose-sm prose sm:prose lg:prose-lg"
                     escapeHtml={false}
                     source={content}
-                    renderers={{ code: CodeBlock}}
+                    renderers={{ code: CodeBlock, image: MarkdownImage}}
                 />
             </div>
         </article>

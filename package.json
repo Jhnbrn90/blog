@@ -8,8 +8,17 @@
     "start": "next start"
   },
   "dependencies": {
+    "clsx": "^1.1.1",
     "gray-matter": "^4.0.2",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-mozjpeg": "^9.0.0",
+    "imagemin-optipng": "^8.0.0",
+    "imagemin-pngquant": "^9.0.1",
+    "lazysizes": "^5.2.2",
+    "lqip-loader": "^2.2.0",
     "next": "9.5.3",
+    "next-compose-plugins": "^2.2.0",
+    "next-optimized-images": "^2.6.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-markdown": "^4.3.1",
@@ -17,6 +26,6 @@
   },
   "devDependencies": {
     "postcss-preset-env": "^6.7.0",
-    "tailwindcss": "^1.8.4"
+    "tailwindcss": "^1.8.5"
   }
 }
