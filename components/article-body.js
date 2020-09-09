@@ -39,7 +39,11 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
 
                 <div className="flex justify-center">
                     <div className="flex flex-col items-center">
-                        <img className="max-w-md h-56 mb-4 rounded-t-lg" src={`/images/posts/${slug}/${cover}`} />
+                        <Image
+                            src={require(`../content/assets/posts/${slug}/${cover}`)}
+                            previewSrc={require(`../content/assets/posts/${slug}/${cover}?webp`)}
+                            className="max-w-md h-56 mb-4 rounded-t-lg"
+                        />
                     </div>
                 </div>
             </div>
