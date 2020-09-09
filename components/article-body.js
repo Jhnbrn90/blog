@@ -18,7 +18,7 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
     );
 
     return (
-        <article className="flex mx-auto flex-col mb-10 rounded bg-white shadow-lg sm:px-12 px-12 py-4">
+        <article className="flex mx-auto flex-col mb-10 rounded bg-white shadow-lg px-12 py-4">
             <div className="sm:flex sm:justify-between text-center w-full text-sm text-gray-600 font-thin">
                 <span class="block mb-4">&mdash; Published: {date}</span>
 
