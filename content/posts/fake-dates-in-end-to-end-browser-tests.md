@@ -16,39 +16,33 @@ Eventually, I ended up using the following setup.
 
 ## The middleware approach
 ### Adding a new middleware
-First, I created a new middleware called `SetTestDate` and registered this middleware in the 'web' middleware group.
+First, I created a new middleware called `SetTestDate`. We want to apply this middleware within the 'web' middleware group, but only when the environment is either "local" (the default dev environment) or "testing" (the environment in `.env.cypress`). 
+
+Let's first conditionally push our middleware to the 'web' group within the `boot()` method of the `AppServiceProvider` as shown below.
 
 ```php
-// 'app/Http/Kernel.php'
+// app/Providers/AppServiceProvider.php
 
-protected $middlewareGroups = [
-    'web' => [
-        // all other middelware...
-        \App\Http\Middleware\SetTestDate::class,
-    ],
-```
+use App\Http\Middleware\SetTestDate;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Support\ServiceProvider;
 
-In the `handle()` method of this middleware, make sure to only listen when the environment is either "local" (the default dev environment) or "testing" (the environment in `.env.cypress`).
-
-```php
-public function handle($request, Closure $next)
+class AppServiceProvider extends ServiceProvider
 {
-    if (App::environment(['local', 'testing'])) {
-        // 
+    public function boot()
+    {
+        if ($this->app->environment(['local', 'testing'])) {
+            $kernel = $this->app->make(Kernel::class);
+            $kernel->appendMiddlewareToGroup('web', SetTestDate::class);
+        }
     }
-
-    return $next($request);
 }
 ```
 
-Furthermore, we want to listen for a given request variable ("set_test_date" in this example) containing the specified (fake) date and persist this value in the session. For clarity and consistency let's store this variable in a class constant `REQUEST_VARIABLE`. 
-
-Lastly, when we do already have this value in the session, make sure to apply the `Carbon::setTestNow()` method for this specific date.
-
-An example of how the middleware eventually may look like is show below.
+Within the `SetTestDate` middleware, we want to check if a certain cookie ("set_test_date" in this example) is set containing the specified (fake) date. For clarity and consistency let's store the name of this cookie in a class constant `TEST_DATE_COOKIE`. 
 
 ```php
-// 'app/Http/Middleware/SetTestDate.php'
+// app/Http/Middleware/SetTestDate.php
 
 <?php
 
@@ -56,22 +50,15 @@ namespace App\Http\Middleware;
 
 use Carbon\Carbon;
 use Closure;
-use Illuminate\Support\Facades\App;
 
 class SetTestDate
 {
-    const REQUEST_VARIABLE = 'set_test_date';
+    const TEST_DATE_COOKIE = 'set_test_date';
 
     public function handle($request, Closure $next)
     {
-        if (App::environment(['local', 'testing'])) {
-            if ($this->wantsToSetTestDate($request)) {
-                $this->writeDateToSession($request);
-            }
-
-            if ($request->session()->has(self::REQUEST_VARIABLE)) {
-                $this->setDateNow($request->session()->get(self::REQUEST_VARIABLE));
-            }
+        if ($this->wantsToSetTestDate($request)) {
+            $this->setDateNow($request->cookie(self::TEST_DATE_COOKIE));
         }
 
         return $next($request);
@@ -84,16 +71,10 @@ class SetTestDate
 
     private function wantsToSetTestDate($request)
     {
-        return $request->has(self::REQUEST_VARIABLE);
-    }
-
-    private function writeDateToSession($request)
-    {
-        $request->session()->put(self::REQUEST_VARIABLE, $request->{self::REQUEST_VARIABLE});
+        return $request->cookie(self::TEST_DATE_COOKIE) !== null;
     }
 }
 ```
-
 
 ### Setting a custom (fake) date in the Cypress test
 Now that we have our middleware in place, we can use the request variable we defined in our middleware to visit a route which uses the fake date. 
@@ -101,12 +82,28 @@ Now that we have our middleware in place, we can use the request variable we def
 ```js
 it('shows the current date', () => {
     const date = 'tuesday 1 september 2020'
+    cy.setCookie('set_test_date', date);
 
-    cy.visit("/" + "?set_test_date=" + date);
+    cy.visit("/");
 
     cy.contains('Tuesday, September 1st 2020')
 })
 ```
+
+### Encrypted cookies
+If you'd run the test at this stage, no cookie will be resolved from the request and `null` will be returned for `$request->cookie('set_test_date')`.
+
+Since Laravel encrypts the cookies by default due to the `EncryptCookies` middleware, we need to create an exception for the `set_test_date` cookie. 
+
+```php
+// app/Http/Middleware/EncryptCookies.php
+class EncryptCookies extends Middleware
+{
+    protected $except = [
+        'set_test_date'
+    ];
+}
+```  
 
 ## Conclusion
 It is possible to manipulate the current date in Laravel *end-to-end* tests using a middleware that accepts a *fake date* as request parameter and sets a **session variable** to persist the fake date by calling `Carbon::setTestNow()` for subsequent requests.
