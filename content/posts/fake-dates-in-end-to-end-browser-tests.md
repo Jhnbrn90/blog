@@ -106,7 +106,7 @@ class EncryptCookies extends Middleware
 ```  
 
 ## Conclusion
-It is possible to manipulate the current date in Laravel *end-to-end* tests using a middleware that accepts a *fake date* as request parameter and sets a **session variable** to persist the fake date by calling `Carbon::setTestNow()` for subsequent requests.
+It is possible to manipulate the current date in Laravel *end-to-end* tests using a middleware that accepts a *fake date* within a certain cookie and calling `Carbon::setTestNow()` for each request that has this cookie.
 
 When using Cypress in a Laravel application, make sure to checkout out the [laracasts/cypress](https://github.com/laracasts/cypress) helper package.
 
