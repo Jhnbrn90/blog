@@ -7,7 +7,7 @@ export default function Navigation() {
                 <h1 className="flex w-full text-xl items-center sm:items-baseline">
                     <div className="w-full text-center">
                         <img className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
-                             src="/images/profile/profile_resized.png" />
+                             src="/assets/profile/profile_resized.png" />
                         <Link href="/">
                             <a className="no-underline text-black font-semibold">
                                 John Braun<span className="text-sm font-thin">'s blog</span>
@@ -15,7 +15,7 @@ export default function Navigation() {
                         </Link>
                         <img
                             className="sm:inline hidden ml-5 h-12 w-12 shadow-lg rounded-full"
-                            src="/images/profile/profile_resized.png"
+                            src="/assets/profile/profile_resized.png"
                         />
                         <div className="sm:block hidden flex justify-center flex-wrap text-xs tracking-tight font-semibold ml-1 align-top inline">
                             <a className="flex-1/2" href="https://twitter.com/jhnbrn90" rel="me">
