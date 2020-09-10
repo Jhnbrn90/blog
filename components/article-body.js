@@ -11,8 +11,8 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
     const MarkdownImage = ({ alt, src }) => (
         <Image
             alt={alt}
-            src={require(`../content/assets/posts/${slug}/${src}`)}
-            previewSrc={require(`../content/assets/posts/${slug}/${src}?webp`)}
+            src={require(`../public/assets/posts/${slug}/${src}`)}
+            previewSrc={require(`../public/assets/posts/${slug}/${src}?webp`)}
             className="w-full"
         />
     );
@@ -20,7 +20,7 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
     return (
         <article className="flex mx-auto flex-col mb-10 rounded bg-white shadow-lg px-12 py-4">
             <div className="sm:flex sm:justify-between text-center w-full text-sm text-gray-600 font-thin">
-                <span class="block mb-4">&mdash; Published: {date}</span>
+                <span className="block mb-4">&mdash; Published: {date}</span>
 
                 <a className="flex items-center text-sm font-normal justify-center" href={`https://github.com/Jhnbrn90/johnbraun.blog/blob/master/content/posts/${slug}.md`}>
                     <span className="mr-1">Submit a PR</span>
@@ -40,8 +40,8 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
                 <div className="flex justify-center">
                     <div className="flex flex-col items-center">
                         <Image
-                            src={require(`../content/assets/posts/${slug}/${cover}`)}
-                            previewSrc={require(`../content/assets/posts/${slug}/${cover}?webp`)}
+                            src={require(`../public/assets/posts/${slug}/${cover}`)}
+                            previewSrc={require(`../public/assets/posts/${slug}/${cover}?webp`)}
                             className="max-w-md h-56 mb-4 rounded-t-lg"
                         />
                     </div>

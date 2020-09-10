@@ -3,7 +3,7 @@ import "lazysizes";
 export default function Image({ alt, src, previewSrc, className }) {
     return (
         <img
-            className={`lazyload blur-up ${className}`}
+            className={`${className}`}
             alt={alt}
             src={previewSrc}
             data-srcset={src}

@@ -17,12 +17,12 @@ export default function SEO({ title, description = "", image = null }) {
                 property="og:description"
                 content={metaDescription}
             />
-            <meta property="og:image" content={`${siteMetadata.siteUrl}/images/${image}`} />
+            <meta property="og:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
             <meta name="twitter:card" content="summary" />
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={metaDescription} />
             <meta name="twitter:creator" content={siteMetadata.social.twitter} />
-            <meta name="twitter:image" content={`${siteMetadata.siteUrl}/images/${image}`} />
+            <meta name="twitter:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
         </Head>
     );
 }
