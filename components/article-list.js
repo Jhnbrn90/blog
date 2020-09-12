@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "./image";
 
 export default function ArticleList({posts}) {
     return (
@@ -34,9 +33,8 @@ export default function ArticleList({posts}) {
                     <div className="sm:w-1/4 sm:block hidden flex justify-end items-start">
                         <div
                             className="flex h-auto w-auto overflow-hidden items-start sm:justify-center sm:items-center">
-                            <Image
-                                src={require(`../public/assets/posts/${slug}/${cover}`)}
-                                previewSrc={require(`../public/assets/posts/${slug}/${cover}?webp`)}
+                            <img
+                                src={`/assets/posts/${slug}/${cover}`}
                                 className="w-full"
                             />
                         </div>
