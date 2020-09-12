@@ -7,6 +7,7 @@ export default function Image({ alt, src, previewSrc, className }) {
             alt={alt}
             src={previewSrc}
             data-srcset={src}
+            loading="lazy"
         />
     );
 }
