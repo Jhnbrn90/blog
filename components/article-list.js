@@ -36,7 +36,7 @@ export default function ArticleList({posts}) {
                             className="flex h-auto w-auto overflow-hidden items-start sm:justify-center sm:items-center">
                             <Image
                                 src={require(`../public/assets/posts/${slug}/${cover}`)}
-                                previewSrc={require(`../public/assets/posts/${slug}/${cover}?lqip`)}
+                                previewSrc={require(`../public/assets/posts/${slug}/${cover}?webp`)}
                                 className="w-full"
                             />
                         </div>
