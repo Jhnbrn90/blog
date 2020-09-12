@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from './image';
 
 export default function Navigation() {
     return (
@@ -6,8 +7,11 @@ export default function Navigation() {
             <div className="flex container mx-auto lg:max-w-screen">
                 <h1 className="flex w-full text-xl items-center sm:items-baseline">
                     <div className="w-full text-center">
-                        <img className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
-                             src="/assets/profile/profile_resized.png" />
+                        <Image
+                            src={require(`../public/assets/profile/profile_resized.png`)}
+                            previewSrc={require(`../public/assets/profile/profile_resized.png?webp`)}
+                            className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
+                        />
                         <Link href="/">
                             <a className="no-underline text-black font-semibold">
                                 John Braun<span className="text-sm font-thin">'s blog</span>
