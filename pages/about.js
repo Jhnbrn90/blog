@@ -8,7 +8,7 @@ export default function About({content}) {
         <>
             <SEO
                 title="About | John Braun"
-                image="/assets/profile/profile_resized.jpg"
+                image="profile/profile_resized.jpg"
             />
 
             <Navigation />
