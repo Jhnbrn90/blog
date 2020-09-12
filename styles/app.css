@@ -110,3 +110,14 @@ hr:before {
     }
 }
 
+/* Styles for lazy loaded images */
+.blur-up {
+    -webkit-filter: blur(2px);
+    filter: blur(2px);
+    transition: filter 350ms ease-in, -webkit-filter 350ms ease-in;
+}
+
+.blur-up.lazyloaded {
+    -webkit-filter: blur(0);
+    filter: blur(0);
+}
