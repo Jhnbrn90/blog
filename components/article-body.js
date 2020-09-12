@@ -12,7 +12,6 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
         <Image
             alt={alt}
             src={require(`../public/assets/posts/${slug}/${src}`)}
-            previewSrc={require(`../public/assets/posts/${slug}/${src}`)}
             className="w-full"
         />
     );
@@ -41,7 +40,6 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
                     <div className="flex flex-col items-center">
                         <Image
                             src={require(`../public/assets/posts/${slug}/${cover}`)}
-                            previewSrc={require(`../public/assets/posts/${slug}/${cover}`)}
                             className="max-w-md h-56 mb-4 rounded-t-lg"
                         />
                     </div>

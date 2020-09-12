@@ -9,7 +9,6 @@ export default function Navigation() {
                     <div className="w-full text-center">
                         <Image
                             src={require(`../public/assets/profile/profile_resized.jpg`)}
-                            previewSrc={require(`../public/assets/profile/profile_resized.jpg`)}
                             className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
                         />
                         <Link href="/">
@@ -19,7 +18,6 @@ export default function Navigation() {
                         </Link>
                         <Image
                             src={require(`../public/assets/profile/profile_resized.jpg`)}
-                            previewSrc={require(`../public/assets/profile/profile_resized.jpg`)}
                             className="sm:inline hidden ml-5 h-12 w-12 shadow-lg rounded-full"
                         />
                         <div className="sm:block hidden flex justify-center flex-wrap text-xs tracking-tight font-semibold ml-1 align-top inline">
