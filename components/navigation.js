@@ -8,8 +8,8 @@ export default function Navigation() {
                 <h1 className="flex w-full text-xl items-center sm:items-baseline">
                     <div className="w-full text-center">
                         <Image
-                            src={require(`../public/assets/profile/profile_resized.png`)}
-                            previewSrc={require(`../public/assets/profile/profile_resized.png?webp`)}
+                            src={require(`../public/assets/profile/profile_resized.jpg`)}
+                            previewSrc={require(`../public/assets/profile/profile_resized.jpg?webp`)}
                             className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
                         />
                         <Link href="/">
@@ -17,9 +17,10 @@ export default function Navigation() {
                                 John Braun<span className="text-sm font-thin">'s blog</span>
                             </a>
                         </Link>
-                        <img
+                        <Image
+                            src={require(`../public/assets/profile/profile_resized.jpg`)}
+                            previewSrc={require(`../public/assets/profile/profile_resized.jpg?webp`)}
                             className="sm:inline hidden ml-5 h-12 w-12 shadow-lg rounded-full"
-                            src="/assets/profile/profile_resized.png"
                         />
                         <div className="sm:block hidden flex justify-center flex-wrap text-xs tracking-tight font-semibold ml-1 align-top inline">
                             <a className="flex-1/2" href="https://twitter.com/jhnbrn90" rel="me">
