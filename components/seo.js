@@ -23,6 +23,12 @@ export default function SEO({ title, description = "", image = null }) {
             <meta name="twitter:description" content={metaDescription} />
             <meta name="twitter:creator" content={siteMetadata.social.twitter} />
             <meta name="twitter:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
+            <link
+                rel="alternate"
+                type="application/rss+xml"
+                title="RSS feed for blog posts"
+                href={`${siteMetadata.siteUrl}/rss.xml`}
+            />
         </Head>
     );
 }
