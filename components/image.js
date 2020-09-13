@@ -1,9 +1,11 @@
+import 'lazysizes';
+
 export default function Image({ alt, src, className }) {
     return (
         <img
-            className={`${className}`}
+            className={`lazyload ${className}`}
             alt={alt}
-            src={src}
+            data-src={src}
             loading="lazy"
         />
     );

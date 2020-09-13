@@ -1,4 +1,6 @@
 import Link from "next/link";
+import 'lazysizes';
+
 
 export default function ArticleList({posts}) {
     return (
@@ -34,8 +36,8 @@ export default function ArticleList({posts}) {
                         <div
                             className="flex h-auto w-auto overflow-hidden items-start sm:justify-center sm:items-center">
                             <img
-                                src={`/assets/posts/${slug}/${cover}`}
-                                className="w-full"
+                                data-src={`/assets/posts/${slug}/${cover}`}
+                                className="lazyload w-full"
                             />
                         </div>
                     </div>
