@@ -1,5 +1,4 @@
 import Link from "next/link";
-import {getSiteMetaData} from "../lib/site";
 
 export default function Navigation() {
     return (
@@ -12,16 +11,19 @@ export default function Navigation() {
                             src="/assets/profile/profile_resized.jpg"
                             className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
                         />
+
                         <Link href="/">
                             <a className="no-underline text-black font-semibold">
                                 John Braun<span className="text-sm font-thin">'s blog</span>
                             </a>
                         </Link>
+
                         <img
                             alt="Profile image for John Braun"
                             src="/assets/profile/profile_resized.jpg"
                             className="sm:inline hidden ml-5 h-12 w-12 shadow-lg rounded-full"
                         />
+
                         <div className="sm:block hidden flex justify-center flex-wrap text-xs tracking-tight font-semibold ml-1 align-top inline">
                             <a className="flex-1/2" href="https://twitter.com/jhnbrn90" rel="me">
                                 <svg className="no-underline inline-block w-6 h-6 fill-current" viewBox="0 0 400 400">
@@ -30,8 +32,8 @@ export default function Navigation() {
                                 <span className="align-center">twitter</span>
                             </a>
                         </div>
-
                     </div>
+
                     <div className="flex flex-1 justify-end text-xs sm:text-normal md:text-xl">
                         <Link href="/about">
                             <a className="no-underline text-black font-semibold">
