@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
 
 body {
     font-family: 'Inter', sans-serif;
@@ -42,17 +43,18 @@ strong {
 }
 
 blockquote {
-    @apply .pl-2 .border-l-2 .border-gray-500 .italic .text-sm
-}
-
-p > code, li > code {
-    @apply .bg-red-100 .text-red-700 .px-1 .rounded-lg .text-sm
+    @apply mb-5 .py-3 .px-3 .bg-gray-100 .border-l-4 .border-gray-400 .rounded-r-md;
 }
 
 code {
     font-family: 'Menlo';
 }
 
+p > code, li > code {
+    font-family: 'Fira Mono', monospace !important;
+    /*@apply .bg-blue-100 .text-blue-700 .px-3 .rounded-lg .text-sm*/
+    @apply .px-2 .py-1 .rounded .bg-gray-100 .text-blue-900 .font-thin .shadow .text-sm .font-mono;
+}
 
 pre {
     font-size: 0.85rem !important;
