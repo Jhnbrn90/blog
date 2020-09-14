@@ -5,10 +5,11 @@ export default function SEO({ title, description = "", image = null }) {
     const siteMetadata = getSiteMetaData();
 
     const metaDescription = description || siteMetadata.description;
+    const siteTitle = title ? `${title} - ${siteMetadata.title}` : `${siteMetadata.title}`;
 
     return (
         <Head>
-            <title>{title} - {siteMetadata.title}</title>
+            <title>{siteTitle}</title>
             <meta name="description" content={metaDescription} />
             <meta property="og:type" content="website" />
             <meta name="og:title" property="og:title" content={title} />
@@ -26,7 +27,7 @@ export default function SEO({ title, description = "", image = null }) {
             <link
                 rel="alternate"
                 type="application/rss+xml"
-                title="RSS feed for blog posts"
+                title="RSS feed for John Braun's blog posts"
                 href={`${siteMetadata.siteUrl}/rss.xml`}
             />
         </Head>

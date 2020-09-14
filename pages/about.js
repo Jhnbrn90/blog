@@ -6,10 +6,7 @@ import SEO from "../components/seo";
 export default function About({content}) {
     return (
         <>
-            <SEO
-                title="About | John Braun"
-                image="profile/profile_resized.jpg"
-            />
+            <SEO title="About" image="profile/profile_resized.jpg" />
 
             <Navigation />
 
