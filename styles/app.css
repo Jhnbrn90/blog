@@ -23,7 +23,7 @@ a:hover {
 }
 
 h1 {
-    @apply .text-3xl .text-gray-800 .py-4 .font-semibold
+    @apply .text-3xl .text-gray-800 .py-3 .font-semibold
 }
 
 h2 {
@@ -47,13 +47,12 @@ blockquote {
 }
 
 code {
-    font-family: 'Menlo';
+    font-family: 'Menlo', monospace;
 }
 
 p > code, li > code {
     font-family: 'Fira Mono', monospace !important;
-    /*@apply .bg-blue-100 .text-blue-700 .px-3 .rounded-lg .text-sm*/
-    @apply .px-2 .py-1 .rounded .bg-gray-100 .text-blue-900 .font-thin .shadow .text-sm .font-mono;
+    @apply .px-2 .py-1 .rounded .bg-gray-100 .text-blue-900 .font-thin .shadow .text-xs .font-mono;
 }
 
 pre {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {getSiteMetaData} from "../lib/site";
 
 export default function Navigation() {
     return (
@@ -7,6 +8,7 @@ export default function Navigation() {
                 <h1 className="flex w-full text-xl items-center sm:items-baseline">
                     <div className="w-full text-center">
                         <img
+                            alt="Profile image for John Braun"
                             src="/assets/profile/profile_resized.jpg"
                             className="inline sm:hidden mr-2 h-8 w-8 shadow-lg rounded-full"
                         />
@@ -16,6 +18,7 @@ export default function Navigation() {
                             </a>
                         </Link>
                         <img
+                            alt="Profile image for John Braun"
                             src="/assets/profile/profile_resized.jpg"
                             className="sm:inline hidden ml-5 h-12 w-12 shadow-lg rounded-full"
                         />
