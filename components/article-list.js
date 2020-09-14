@@ -18,7 +18,7 @@ export default function ArticleList({posts}) {
                             </Link>
 
                             <div className="flex justify-center py-2">
-                                <img alt={title} data-src={`/assets/posts/${slug}/${cover}`} className="lazyload w-1/2 sm:hidden rounded-lg"/>
+                                <img alt={title} data-src={`/assets/posts/${slug}/${cover}`} className="lazyload w-1/2 h-full sm:hidden rounded-lg"/>
                             </div>
 
                             <p className="pt-1 sm:pb-10 pb-5 text-gray-700 sm:text-base text-sm sm:text-left">
