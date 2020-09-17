@@ -39,6 +39,7 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
                 <div className="flex justify-center">
                     <div className="flex flex-col items-center">
                         <img
+                            alt={title}
                             src={`/assets/posts/${slug}/${cover}`}
                             className="max-w-md h-56 mb-4 rounded-t-lg"
                         />
