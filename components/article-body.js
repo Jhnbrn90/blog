@@ -12,7 +12,7 @@ export default function ArticleBody({ title, date, content, slug, cover}) {
         <Image
             alt={alt}
             src={`/assets/posts/${slug}/${src}`}
-            className="w-full"
+            className="mx-auto max-h-lg"
         />
     );
 
