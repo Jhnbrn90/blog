@@ -12,7 +12,7 @@ export default function SEO({ title, description = "", image = null }) {
             <title>{siteTitle}</title>
             <meta name="description" content={metaDescription} />
             <meta property="og:type" content="website" />
-            <meta name="og:title" property="og:title" content={title} />
+            <meta name="og:title" property="og:title" content={title ?? siteMetadata.title} />
             <meta
                 name="og:description"
                 property="og:description"
@@ -20,7 +20,7 @@ export default function SEO({ title, description = "", image = null }) {
             />
             <meta property="og:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
             <meta name="twitter:card" content="summary" />
-            <meta name="twitter:title" content={title} />
+            <meta name="twitter:title" content={title ?? siteMetadata.title} />
             <meta name="twitter:description" content={metaDescription} />
             <meta name="twitter:creator" content={siteMetadata.social.twitter} />
             <meta name="twitter:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
