@@ -31,7 +31,11 @@ h2 {
 }
 
 h3 {
-    @apply .text-gray-800 .py-2 .font-semibold
+    @apply .text-gray-800 .py-2 .font-semibold .text-lg
+}
+
+h4 {
+    @apply .text-gray-700 .py-1 .font-semibold .text-base
 }
 
 p {
