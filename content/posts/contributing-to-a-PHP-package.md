@@ -5,6 +5,7 @@ cover: 'cover.png'
 description: 'Contributing to packages instead of applications can look challenging. In this blog post I want to show a workflow to work on PHP packages and be able to test them out locally.'
 ---
 
+## Introduction
 In view of upcoming [Hacktoberfest](https://hacktoberfest.digitalocean.com/), I want to share some tips for beginners who might want to make their first contribution specifically to a PHP **package**. From my own experience, I know it can look daunting to work on a package as opposed to a "regular" (Laravel) application.  
 
 This post is intended to provide some guidance to first-time contributors to open source PHP packages.
@@ -131,12 +132,15 @@ An example of a good description could be as follows:
 
 ---
 
+## Summary
 I hope the suggested workflow can help first-time contributors to contribute to a PHP package with confidence. 
 If you want to learn more about the ins-and-outs of creating a Laravel specific package, make sure to checkout these resources:
  
 - [LaravelPackage.com](https://laravelpackage.com)
 - [Laravel Package Training](https://laravelpackage.training/)
 - [PHP Package Development course](https://phppackagedevelopment.com/)
+
+--- 
 
 ## Advanced tips
 
