@@ -1,5 +1,7 @@
 I'm John Braun, living in The Netherlands. I'm currently working at [Enrise](https://enrise.com) as a software developer. I created [LaravelPackage.com](https://laravelpackage.com) as an open source tutorial to PHP package development. Contributions are highly welcomed.
 
+This blog is built with [Next JS](https://nextjs.org/) and open source [on GitHub](https://github.com/Jhnbrn90/johnbraun.blog). 
+
 You can find me on [Twitter](https://twitter.com/@jhnbrn90), [LinkedIn,](https://nl.linkedin.com/in/jbraunnl) [GitHub](https://github.com/jhnbrn90) and the [Laracasts forum](https://laracasts.com/@JohnBraun). Since May 2019 I'm a [Laravel Certified](https://exam.laravelcert.com/is/john-braun/certified-since/2019-05-31?) developer.
 
 Previously, I did my PhD research in Organic Chemistry within the [Sythetic & BioOrganic Chemistry group](http://syborch.com) (SyBOrCh) at the [Vrije Universiteit Amsterdam](http://www.vu.nl).
