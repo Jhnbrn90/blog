@@ -3,12 +3,36 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneLight as theme } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import Image from "./image";
 
-const CodeBlock = ({ language, value }) => {
+const CodeBlock = ({
+    language,
+    value
+}: {
+    language: string,
+    value: string
+}) => {
     return <SyntaxHighlighter language={language} style={theme}>{value}</SyntaxHighlighter>;
 };
 
-export default function ArticleBody({ title, date, content, slug, cover}) {
-    const MarkdownImage = ({ alt, src }) => (
+export default function ArticleBody({
+    title,
+    date,
+    content,
+    slug,
+    cover
+}: {
+    title: string,
+    date: string,
+    content: string,
+    slug: string,
+    cover: string
+}) {
+    const MarkdownImage = ({
+        alt,
+        src
+    }: {
+        alt: string,
+        src: string
+    }) => (
         <Image
             alt={alt}
             src={`/assets/posts/${slug}/${src}`}
