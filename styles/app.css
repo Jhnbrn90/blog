@@ -39,6 +39,7 @@ h4 {
 }
 
 p {
+    line-height: 1.6;
     @apply .pt-1 .pb-2 .mb-2 .text-gray-700
 }
 
