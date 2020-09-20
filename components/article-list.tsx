@@ -2,7 +2,19 @@ import Link from "next/link";
 import 'lazysizes';
 
 
-export default function ArticleList({posts}) {
+export default function ArticleList({
+    posts
+}: {
+    posts: {
+        frontmatter: {
+            title: string,
+            description: string,
+            date: string,
+            cover: string
+        },
+        slug: string
+    }[]
+}) {
     return (
         <div>
             {posts.map(({frontmatter: {title, description, date, cover}, slug}) => (
