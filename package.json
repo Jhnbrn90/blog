@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "clsx": "^1.1.1",
+    "fathom-client": "^3.0.0",
     "gray-matter": "^4.0.2",
     "lazysizes": "^5.2.2",
     "next": "9.5.3",
