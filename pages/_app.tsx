@@ -2,8 +2,9 @@ import '../styles/app.css'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import * as Fathom from 'fathom-client'
+import { AppProps } from 'next/app'
 
-function MyApp({ Component, pageProps }) {
+export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
   useEffect(() => {
@@ -27,5 +28,3 @@ function MyApp({ Component, pageProps }) {
 
   return <Component {...pageProps} />
 }
-
-export default MyApp
