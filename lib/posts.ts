@@ -5,14 +5,14 @@ import matter from 'gray-matter'
 const postsDirectory = path.join(process.cwd(), 'content/posts')
 
 // Get day in format: Month day, Year. e.g. April 19, 2020
-function getFormattedDate(date) {
+function getFormattedDate(date: string) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(date).toLocaleDateString("en-US", options);
 
     return formattedDate;
 }
 
-function stripDateFromFilename(fileName) {
+function stripDateFromFilename(fileName: string) {
     return fileName.replace(/\d{4}-\d{2}-\d{2}\./, '');
 }
 
@@ -36,8 +36,8 @@ export function getSortedPosts(excludeSeries = true) {
         const { data, excerpt, content } = matter(fileContents);
 
         const frontmatter = {
-            ...data,
-            date: getFormattedDate(data.date),
+            ...(data as {title: string, description: string, date: string}),
+            formattedDate: getFormattedDate(data.date),
             cover: data.cover
         };
 
@@ -48,14 +48,17 @@ export function getSortedPosts(excludeSeries = true) {
             content,
         };
     })
-    .sort(
-        (a, b) => new Date(b.frontmatter.date) - new Date(a.frontmatter.date)
-    );
 
-    return posts;
+    return posts.sort((a, b) => {
+        if (a.frontmatter.date < b.frontmatter.date) {
+          return 1
+        } else {
+          return -1
+        }
+    })
 }
 
-export function getPostBySlug(slug) {
+export function getPostBySlug(slug: string) {
     const posts = getSortedPosts(false);
 
     const postIndex = posts.findIndex(({slug: postSlug}) => postSlug === slug);
