@@ -9,6 +9,7 @@ export default function ArticleList({
         frontmatter: {
             title: string,
             description: string,
+            formattedDate: string,
             date: string,
             cover: string
         },
@@ -17,7 +18,7 @@ export default function ArticleList({
 }) {
     return (
         <div>
-            {posts.map(({frontmatter: {title, description, date, cover}, slug}) => (
+            {posts.map(({frontmatter: {title, description, formattedDate, cover}, slug}) => (
                 <article key={slug} className="flex mb-10 rounded bg-white shadow-lg p-6">
                     <div className="w-full sm:w-3/4 flex flex-col justify-between mr-4">
                         <div className="w-full text-justify">
@@ -47,7 +48,7 @@ export default function ArticleList({
                         </div>
 
                         <div className="text-sm text-gray-500 mt-6">
-                            &mdash; Published: {date}
+                            &mdash; Published: {formattedDate}
                         </div>
                     </div>
 
