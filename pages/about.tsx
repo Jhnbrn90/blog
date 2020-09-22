@@ -1,12 +1,25 @@
-import Navigation from "../components/navigation";
-import {getAboutPage} from "../lib/about";
-import ReactMarkdown from "react-markdown/with-html";
-import SEO from "../components/seo";
+import Navigation from '../components/navigation';
+import {getAboutPage} from '../lib/about';
+import ReactMarkdown from 'react-markdown/with-html';
+import SEO from '../components/seo';
+import { GetStaticProps } from 'next';
+import { getSiteMetaData } from '../lib/site';
+import React from 'react';
 
-export default function About({content}) {
+export default function About({
+    content,
+}: {
+    content: string
+}): React.ReactNode {
+    const siteMetadata = getSiteMetaData();
+
     return (
         <>
-            <SEO title="About" image="profile/profile_resized.jpg" />
+            <SEO
+                title="About"
+                image="profile/profile_resized.jpg"
+                description={siteMetadata.aboutPage}
+            />
 
             <Navigation />
 
@@ -29,12 +42,15 @@ export default function About({content}) {
                     </div>
                 </article>
             </main>
-            </>
-    )
+        </>
+    );
 }
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
     const content = getAboutPage();
-
-    return { props: { content } };
-}
+    return {
+        props: {
+            content,
+        },
+    };
+};

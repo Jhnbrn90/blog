@@ -1,15 +1,16 @@
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 import 'lazysizes';
+import { Post } from '../common/types';
 
-
-export default function ArticleList({posts}) {
+export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element {
     return (
         <div>
-            {posts.map(({frontmatter: {title, description, date, cover}, slug}) => (
+            {posts.map(({frontmatter: {title, description, formattedDate, cover}, slug}) => (
                 <article key={slug} className="flex mb-10 rounded bg-white shadow-lg p-6">
                     <div className="w-full sm:w-3/4 flex flex-col justify-between mr-4">
                         <div className="w-full text-justify">
-                            <Link href={"/posts/[slug]"} as={`/posts/${slug}`}>
+                            <Link href={'/posts/[slug]'} as={`/posts/${slug}`}>
                                 <a className="hover:underline">
                                     <h1 className="text-xl tracking-wide sm:tracking-normal text-center sm:text-left sm:text-3xl font-semibold leading-tight text-left">
                                         {title}
@@ -26,7 +27,7 @@ export default function ArticleList({posts}) {
                             </p>
 
                             <div className="sm:block flex justify-center">
-                                <Link href={"/posts/[slug]"} as={`/posts/${slug}`}>
+                                <Link href={'/posts/[slug]'} as={`/posts/${slug}`}>
                                     <a className="bg-blue-600 hover:no-underline hover:text-white px-3 py-2 rounded text-blue-100 hover:bg-blue-700 hover:shadow">
                                         Read more &rarr;
                                     </a>
@@ -35,7 +36,7 @@ export default function ArticleList({posts}) {
                         </div>
 
                         <div className="text-sm text-gray-500 mt-6">
-                            &mdash; Published: {date}
+                            &mdash; Published: {formattedDate}
                         </div>
                     </div>
 
@@ -48,5 +49,5 @@ export default function ArticleList({posts}) {
                 </article>
             ))}
         </div>
-    )
+    );
 }

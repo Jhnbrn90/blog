@@ -1,6 +1,7 @@
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 
-export default function Navigation() {
+export default function Navigation(): JSX.Element {
     return (
         <header className="sm:mb-10 sm:pb-5 sm:pt-8 sm:shadow-lg bg-white px-10">
             <div className="flex container mx-auto lg:max-w-screen">
@@ -14,7 +15,7 @@ export default function Navigation() {
 
                         <Link href="/">
                             <a className="no-underline text-black font-semibold">
-                                John Braun<span className="text-sm font-thin">'s blog</span>
+                                John Braun<span className="text-sm font-thin">&apos;s blog</span>
                             </a>
                         </Link>
 
@@ -37,12 +38,12 @@ export default function Navigation() {
                     <div className="flex flex-1 justify-end text-xs sm:text-normal md:text-xl">
                         <Link href="/about">
                             <a className="no-underline text-black font-semibold">
-                                //<span className="text-sm font-thin">about</span>
+                                &#47;&#47;<span className="text-sm font-thin">about</span>
                             </a>
                         </Link>
                     </div>
                 </h1>
             </div>
         </header>
-    )
+    );
 }

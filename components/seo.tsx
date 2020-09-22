@@ -1,7 +1,16 @@
-import Head from "next/head";
-import { getSiteMetaData } from "../lib/site";
+import React from 'react';
+import Head from 'next/head';
+import { getSiteMetaData } from '../lib/site';
 
-export default function SEO({ title, description = "", image = null }) {
+export default function SEO({
+    title,
+    description,
+    image,
+}: {
+    title?: string,
+    description: string,
+    image?: string
+}): JSX.Element {
     const siteMetadata = getSiteMetaData();
 
     const metaDescription = description || siteMetadata.description;
