@@ -9,7 +9,7 @@ const generateRssItem = ({
         formattedDate: string,
     },
     slug: string
-}) => `
+}): string => `
   <item>
     <guid>${SiteConfig.siteMetadata.siteUrl}/posts/${slug}</guid>
     <title>${title}</title>
@@ -26,7 +26,7 @@ const generateRss = (posts: {
         formattedDate: string
     },
     slug: string
-}[]) => `
+}[]): string => `
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>${SiteConfig.siteMetadata.title}</title>

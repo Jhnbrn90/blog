@@ -1,3 +1,4 @@
+import React from 'react';
 import 'lazysizes';
 
 export default function Image({
@@ -8,7 +9,7 @@ export default function Image({
     alt: string,
     src: string,
     className: string
-}) {
+}): JSX.Element {
     return (
         <img
             className={`lazyload ${className}`}

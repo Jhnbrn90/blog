@@ -1,21 +1,9 @@
+import React from 'react';
 import Link from 'next/link';
 import 'lazysizes';
+import { Post } from '../common/types';
 
-
-export default function ArticleList({
-    posts,
-}: {
-    posts: {
-        frontmatter: {
-            title: string,
-            description: string,
-            formattedDate: string,
-            date: string,
-            cover: string
-        },
-        slug: string
-    }[]
-}) {
+export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element {
     return (
         <div>
             {posts.map(({frontmatter: {title, description, formattedDate, cover}, slug}) => (

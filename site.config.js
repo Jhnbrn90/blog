@@ -8,5 +8,8 @@ export default {
         social: {
             twitter: 'jhnbrn90',
         },
+        github: {
+            postUrl: 'https://github.com/Jhnbrn90/johnbraun.blog/blob/master/content/posts/',
+        },
     },
 };

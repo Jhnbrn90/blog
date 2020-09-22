@@ -3,40 +3,19 @@ import ArticleBody from '../../components/article-body';
 import Layout from '../../components/layout';
 import SEO from '../../components/seo';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import React from 'react';
+import { Post as PostInterface } from '../../common/types';
 
-export default function Post({
-    post,
-    frontmatter,
-    slug,
-}: {
-    post: {
-        excerpt: string,
-        content: string,
-    },
-    frontmatter: {
-        title: string,
-        description: string,
-        cover: string,
-        formattedDate: string,
-
-    },
-    slug: string,
-}) {
+export default function Post(post: PostInterface): React.ReactNode {
     return (
         <Layout>
             <SEO
-                title={frontmatter.title}
-                description={frontmatter.description || post.excerpt}
-                image={`posts/${slug}/${frontmatter.cover}`}
+                title={post.frontmatter.title}
+                description={post.frontmatter.description || post.excerpt}
+                image={`posts/${post.slug}/${post.frontmatter.cover}`}
             />
 
-            <ArticleBody
-                title={frontmatter.title}
-                date={frontmatter.formattedDate}
-                cover={frontmatter.cover}
-                content={post.content}
-                slug={slug}
-            />
+            <ArticleBody post={post} />
         </Layout>
     );
 }
@@ -51,13 +30,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const postData = getPostBySlug(params!.slug as string);
+    const post = getPostBySlug(params.slug as string);
 
     return {
         props: {
-            post: postData.post,
-            frontmatter: postData.frontmatter,
-            slug: params!.slug,
+            ...(post as PostInterface),
         },
     };
 };

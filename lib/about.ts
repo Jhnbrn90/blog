@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 
 const contentPath = path.join(process.cwd(), 'content/pages');
 
-export function getAboutPage() {
+export function getAboutPage(): string {
     const fileContents = fs.readFileSync(contentPath + '/about.md').toString();
 
     const { content } = matter(fileContents);

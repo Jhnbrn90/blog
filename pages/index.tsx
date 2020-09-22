@@ -6,21 +6,14 @@ import generateRss from '../lib/rss';
 import fs from 'fs';
 import { getSiteMetaData } from '../lib/site';
 import { GetStaticProps } from 'next';
+import React from 'react';
+import { Post } from '../common/types';
 
 export default function Home({
     posts,
 }: {
-    posts: {
-        frontmatter: {
-            title: string,
-            description: string,
-            date: string,
-            formattedDate: string,
-            cover: string,
-        },
-        slug: string,
-    }[]
-}) {
+    posts: Post[]
+}): React.ReactNode {
     const siteMetadata = getSiteMetaData();
 
     return (

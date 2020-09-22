@@ -4,12 +4,13 @@ import ReactMarkdown from 'react-markdown/with-html';
 import SEO from '../components/seo';
 import { GetStaticProps } from 'next';
 import { getSiteMetaData } from '../lib/site';
+import React from 'react';
 
 export default function About({
     content,
 }: {
     content: string
-}) {
+}): React.ReactNode {
     const siteMetadata = getSiteMetaData();
 
     return (

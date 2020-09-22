@@ -1,3 +1,4 @@
+import React from 'react';
 import Head from 'next/head';
 import { getSiteMetaData } from '../lib/site';
 
@@ -9,7 +10,7 @@ export default function SEO({
     title?: string,
     description: string,
     image?: string
-}) {
+}): JSX.Element {
     const siteMetadata = getSiteMetaData();
 
     const metaDescription = description || siteMetadata.description;
