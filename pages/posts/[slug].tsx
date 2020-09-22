@@ -1,13 +1,13 @@
-import {getSlugs, getPostBySlug} from "../../lib/posts";
-import ArticleBody from '../../components/article-body'
-import Layout from "../../components/layout";
-import SEO from "../../components/seo";
-import { GetStaticPaths, GetStaticProps } from "next";
+import {getSlugs, getPostBySlug} from '../../lib/posts';
+import ArticleBody from '../../components/article-body';
+import Layout from '../../components/layout';
+import SEO from '../../components/seo';
+import { GetStaticPaths, GetStaticProps } from 'next';
 
 export default function Post({
     post,
     frontmatter,
-    slug
+    slug,
 }: {
     post: {
         excerpt: string,
@@ -48,7 +48,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         paths,
         fallback: false,
     };
-}
+};
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const postData = getPostBySlug(params!.slug as string);
@@ -57,7 +57,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         props: {
             post: postData.post,
             frontmatter: postData.frontmatter,
-            slug: params!.slug
-        }
+            slug: params!.slug,
+        },
     };
-}
+};

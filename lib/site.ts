@@ -1,4 +1,4 @@
-import SiteConfig from "../site.config";
+import SiteConfig from '../site.config';
 
 export function getSiteMetaData() {
     return SiteConfig.siteMetadata;

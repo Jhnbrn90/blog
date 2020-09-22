@@ -1,12 +1,12 @@
-import Navigation from "../components/navigation";
-import {getAboutPage} from "../lib/about";
-import ReactMarkdown from "react-markdown/with-html";
-import SEO from "../components/seo";
-import { GetStaticProps } from "next";
+import Navigation from '../components/navigation';
+import {getAboutPage} from '../lib/about';
+import ReactMarkdown from 'react-markdown/with-html';
+import SEO from '../components/seo';
+import { GetStaticProps } from 'next';
 import { getSiteMetaData } from '../lib/site';
 
 export default function About({
-    content
+    content,
 }: {
     content: string
 }) {
@@ -42,14 +42,14 @@ export default function About({
                 </article>
             </main>
         </>
-    )
+    );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
     const content = getAboutPage();
     return {
         props: {
-            content
-        }
+            content,
+        },
     };
-}
+};

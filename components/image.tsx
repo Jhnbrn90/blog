@@ -3,7 +3,7 @@ import 'lazysizes';
 export default function Image({
     alt,
     src,
-    className
+    className,
 }: {
     alt: string,
     src: string,

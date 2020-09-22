@@ -1,7 +1,7 @@
-import SiteConfig from "../site.config";
+import SiteConfig from '../site.config';
 
 const generateRssItem = ({
-    frontmatter: {title, description, formattedDate}, slug
+    frontmatter: {title, description, formattedDate}, slug,
 }: {
     frontmatter: {
         title: string,

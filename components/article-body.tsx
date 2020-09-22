@@ -1,11 +1,11 @@
-import ReactMarkdown from "react-markdown/with-html";
+import ReactMarkdown from 'react-markdown/with-html';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneLight as theme } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
-import Image from "./image";
+import Image from './image';
 
 const CodeBlock = ({
     language,
-    value
+    value,
 }: {
     language: string,
     value: string
@@ -18,7 +18,7 @@ export default function ArticleBody({
     date,
     content,
     slug,
-    cover
+    cover,
 }: {
     title: string,
     date: string,
@@ -28,7 +28,7 @@ export default function ArticleBody({
 }) {
     const MarkdownImage = ({
         alt,
-        src
+        src,
     }: {
         alt: string,
         src: string
@@ -80,5 +80,5 @@ export default function ArticleBody({
                 />
             </div>
         </article>
-    )
+    );
 }

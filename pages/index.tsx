@@ -1,14 +1,14 @@
-import ArticleList from '../components/article-list'
-import {getSortedPosts} from "../lib/posts";
-import Layout from "../components/layout";
-import SEO from "../components/seo";
+import ArticleList from '../components/article-list';
+import {getSortedPosts} from '../lib/posts';
+import Layout from '../components/layout';
+import SEO from '../components/seo';
 import generateRss from '../lib/rss';
 import fs from 'fs';
 import { getSiteMetaData } from '../lib/site';
 import { GetStaticProps } from 'next';
 
 export default function Home({
-    posts
+    posts,
 }: {
     posts: {
         frontmatter: {
@@ -32,7 +32,7 @@ export default function Home({
 
             <ArticleList posts={posts}/>
         </Layout>
-    )
+    );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -46,4 +46,4 @@ export const getStaticProps: GetStaticProps = async () => {
             posts,
         },
     };
-}
+};

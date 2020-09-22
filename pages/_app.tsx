@@ -1,30 +1,30 @@
-import '../styles/app.css'
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import * as Fathom from 'fathom-client'
-import { AppProps } from 'next/app'
+import '../styles/app.css';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import * as Fathom from 'fathom-client';
+import { AppProps } from 'next/app';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const router = useRouter()
+    const router = useRouter();
 
-  useEffect(() => {
+    useEffect(() => {
     // Initialize Fathom when the app loads
-    Fathom.load('FEFGUBIP', {
-      includedDomains: ['johnbraun.blog']
-    })
+        Fathom.load('FEFGUBIP', {
+            includedDomains: ['johnbraun.blog'],
+        });
 
-    function onRouteChangeComplete() {
-      Fathom.trackPageview()
-    }
+        function onRouteChangeComplete() {
+            Fathom.trackPageview();
+        }
 
-    // Record a pageview when route changes
-    router.events.on('routeChangeComplete', onRouteChangeComplete)
+        // Record a pageview when route changes
+        router.events.on('routeChangeComplete', onRouteChangeComplete);
 
-    // Unassign event listener
-    return () => {
-      router.events.off('routeChangeComplete', onRouteChangeComplete)
-    }
-  }, [])
+        // Unassign event listener
+        return () => {
+            router.events.off('routeChangeComplete', onRouteChangeComplete);
+        };
+    }, []);
 
-  return <Component {...pageProps} />
+    return <Component {...pageProps} />;
 }
