@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Navigation from './navigation';
 
 export default function Layout({children}: {children: React.ReactNode}): JSX.Element {

@@ -1,5 +1,7 @@
 import React from 'react';
-import Document, { Head, Main, NextScript, Html } from 'next/document';
+
+import Document, { Head, Html,Main, NextScript } from 'next/document';
+
 import { getSiteMetaData } from '../lib/site';
 
 export default class MyDocument extends Document {

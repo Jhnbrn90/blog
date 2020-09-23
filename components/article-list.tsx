@@ -1,7 +1,10 @@
 import React from 'react';
+
 import Link from 'next/link';
-import 'lazysizes';
+
 import { Post } from '../common/types';
+
+import 'lazysizes';
 
 export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element {
     return (

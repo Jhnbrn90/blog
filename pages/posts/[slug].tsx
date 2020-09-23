@@ -1,10 +1,12 @@
-import {getSlugs, getPostBySlug} from '../../lib/posts';
+import React from 'react';
+
+import { GetStaticPaths, GetStaticProps } from 'next';
+
+import { Post as PostInterface } from '../../common/types';
 import ArticleBody from '../../components/article-body';
 import Layout from '../../components/layout';
 import SEO from '../../components/seo';
-import { GetStaticPaths, GetStaticProps } from 'next';
-import React from 'react';
-import { Post as PostInterface } from '../../common/types';
+import {getPostBySlug,getSlugs} from '../../lib/posts';
 
 export default function Post(post: PostInterface): React.ReactNode {
     return (

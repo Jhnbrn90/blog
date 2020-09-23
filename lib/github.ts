@@ -1,5 +1,6 @@
-import { getSiteMetaData } from './site';
 import { Post } from '../common/types';
+
+import { getSiteMetaData } from './site';
 
 export function getPullRequestUrl(post: Post): string {
     const siteConfig = getSiteMetaData();

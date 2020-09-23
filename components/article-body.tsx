@@ -1,9 +1,12 @@
 import React from 'react';
+
 import ReactMarkdown from 'react-markdown/with-html';
-import Image from './image';
-import CodeBlock from './code-block';
+
 import { Post } from '../common/types';
 import { getPullRequestUrl } from '../lib/github';
+
+import CodeBlock from './code-block';
+import Image from './image';
 
 export default function ArticleBody({ post }: {post: Post}): JSX.Element {
     const MarkdownImage = ({
