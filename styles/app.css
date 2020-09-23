@@ -48,7 +48,7 @@ strong {
 }
 
 blockquote {
-    @apply mb-5 .py-3 .px-3 .bg-gray-100 .border-l-4 .border-gray-400 .rounded-r-md;
+    @apply .mb-5 .py-3 .px-3 .border-l-4 .bg-gray-100 .border-indigo-400 .text-black .rounded-r-md .text-justify .shadow;
 }
 
 code {
@@ -115,4 +115,3 @@ hr:before {
         @apply .text-2xl
     }
 }
-
