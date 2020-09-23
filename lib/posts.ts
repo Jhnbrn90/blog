@@ -2,11 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
-import { Post } from '../common/types';
+import { Post, Slug } from '../common/types';
 
 const postsDirectory = path.join(process.cwd(), 'content/posts');
 
-// Get day in format: Month day, Year. e.g. April 19, 2020
+// Get day in format "Month day, Year". e.g. "April 19, 2020"
 function getFormattedDate(date: string): string {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(date).toLocaleDateString('en-US', options);
@@ -31,7 +31,6 @@ export function getSortedPosts(excludeSeries = true): Post[] {
     const posts = fileNames.map(fileName => {
         const fileNameWithoutDate = stripDateFromFilename(fileName);
         const slug = fileNameWithoutDate.replace(/\.md$/, '');
-
         const fullPath = path.join(postsDirectory, fileName);
         const fileContents = fs.readFileSync(fullPath).toString();
 
@@ -68,11 +67,7 @@ export function getPostBySlug(slug: string): Post {
     return posts[postIndex];
 }
 
-export function getSlugs(): {
-    params: {
-        slug: string
-    }
-}[] {
+export function getSlugs(): Slug[] {
     const fileNames = fs.readdirSync(postsDirectory);
 
     return fileNames.map(fileName => {

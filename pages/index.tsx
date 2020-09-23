@@ -11,11 +11,7 @@ import {getSortedPosts} from '../lib/posts';
 import generateRss from '../lib/rss';
 import { getSiteMetaData } from '../lib/site';
 
-export default function Home({
-    posts,
-}: {
-    posts: Post[]
-}): React.ReactNode {
+export default function Home({posts}: {posts: Post[]}): React.ReactNode {
     const siteMetadata = getSiteMetaData();
 
     return (

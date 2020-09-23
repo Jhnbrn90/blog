@@ -8,19 +8,19 @@ import Layout from '../../components/layout';
 import SEO from '../../components/seo';
 import {getPostBySlug,getSlugs} from '../../lib/posts';
 
-export default function Post(post: PostInterface): React.ReactNode {
-    return (
-        <Layout>
-            <SEO
-                title={post.frontmatter.title}
-                description={post.frontmatter.description || post.excerpt}
-                image={`posts/${post.slug}/${post.frontmatter.cover}`}
-            />
+const Post = (post: PostInterface): React.ReactNode => (
+    <Layout>
+        <SEO
+            title={post.frontmatter.title}
+            description={post.frontmatter.description || post.excerpt}
+            image={`posts/${post.slug}/${post.frontmatter.cover}`}
+        />
 
-            <ArticleBody post={post} />
-        </Layout>
-    );
-}
+        <ArticleBody post={post} />
+    </Layout>
+);
+
+export default Post;
 
 export const getStaticPaths: GetStaticPaths = async () => {
     const paths = getSlugs();

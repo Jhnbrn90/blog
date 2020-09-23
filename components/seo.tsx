@@ -2,19 +2,11 @@ import React from 'react';
 
 import Head from 'next/head';
 
+import { SEOProps } from '../common/types';
 import { getSiteMetaData } from '../lib/site';
 
-export default function SEO({
-    title,
-    description,
-    image,
-}: {
-    title?: string,
-    description: string,
-    image?: string
-}): JSX.Element {
+export default function SEO({title, description, image}: SEOProps): JSX.Element {
     const siteMetadata = getSiteMetaData();
-
     const metaDescription = description || siteMetadata.description;
     const siteTitle = title ? `${title} - ${siteMetadata.title}` : `${siteMetadata.title}`;
 

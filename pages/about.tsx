@@ -8,11 +8,7 @@ import SEO from '../components/seo';
 import {getAboutPage} from '../lib/about';
 import { getSiteMetaData } from '../lib/site';
 
-export default function About({
-    content,
-}: {
-    content: string
-}): React.ReactNode {
+export default function About({content}: {content: string}): React.ReactNode {
     const siteMetadata = getSiteMetaData();
 
     return (
@@ -50,6 +46,7 @@ export default function About({
 
 export const getStaticProps: GetStaticProps = async () => {
     const content = getAboutPage();
+
     return {
         props: {
             content,
