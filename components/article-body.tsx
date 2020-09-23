@@ -2,20 +2,14 @@ import React from 'react';
 
 import ReactMarkdown from 'react-markdown/with-html';
 
-import { Post } from '../common/types';
+import { ImageProps,Post } from '../common/types';
 import { getPullRequestUrl } from '../lib/github';
 
 import CodeBlock from './code-block';
 import Image from './image';
 
 export default function ArticleBody({ post }: {post: Post}): JSX.Element {
-    const MarkdownImage = ({
-        alt,
-        src,
-    }: {
-        alt: string,
-        src: string
-    }) => (
+    const MarkdownImage = ({alt, src}: ImageProps): JSX.Element => (
         <Image
             alt={alt}
             src={`/assets/posts/${post.slug}/${src}`}
