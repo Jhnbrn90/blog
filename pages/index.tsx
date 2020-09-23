@@ -1,13 +1,15 @@
+import React from 'react';
+
+import fs from 'fs';
+import { GetStaticProps } from 'next';
+
+import { Post } from '../common/types';
 import ArticleList from '../components/article-list';
-import {getSortedPosts} from '../lib/posts';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
+import {getSortedPosts} from '../lib/posts';
 import generateRss from '../lib/rss';
-import fs from 'fs';
 import { getSiteMetaData } from '../lib/site';
-import { GetStaticProps } from 'next';
-import React from 'react';
-import { Post } from '../common/types';
 
 export default function Home({
     posts,

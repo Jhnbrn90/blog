@@ -1,10 +1,12 @@
-import Navigation from '../components/navigation';
-import {getAboutPage} from '../lib/about';
-import ReactMarkdown from 'react-markdown/with-html';
-import SEO from '../components/seo';
-import { GetStaticProps } from 'next';
-import { getSiteMetaData } from '../lib/site';
 import React from 'react';
+
+import { GetStaticProps } from 'next';
+import ReactMarkdown from 'react-markdown/with-html';
+
+import Navigation from '../components/navigation';
+import SEO from '../components/seo';
+import {getAboutPage} from '../lib/about';
+import { getSiteMetaData } from '../lib/site';
 
 export default function About({
     content,
