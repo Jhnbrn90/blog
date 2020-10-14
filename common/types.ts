@@ -44,6 +44,7 @@ export interface RSSItem {
 export interface SiteMetaDataProps {
     title: string,
     description: string,
+    keywords: string,
     aboutPage: string,
     siteUrl: string,
     language: string,

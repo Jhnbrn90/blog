@@ -1,0 +1,21 @@
+{
+  "name": "JohnBraun.blog",
+  "short_name": "John's weblog",
+  "icons": [
+    {
+      "src": "/images/icons/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/icons/icons-384.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    }
+  ],
+  "theme_color": "#3182ce",
+  "background_color": "#3182ce",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/"
+}
