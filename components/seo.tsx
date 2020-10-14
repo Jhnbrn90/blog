@@ -14,6 +14,7 @@ export default function SEO({title, description, image}: SEOProps): JSX.Element 
         <Head>
             <title>{siteTitle}</title>
             <meta name="description" content={metaDescription} />
+            <meta name="keywords" content={siteMetadata.keywords} />
             <meta property="og:type" content="website" />
             <meta name="og:title" property="og:title" content={title ?? siteMetadata.title} />
             <meta
