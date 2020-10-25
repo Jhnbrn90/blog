@@ -15,9 +15,9 @@ export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element 
                         <div className="w-full text-justify">
                             <Link href={'/posts/[slug]'} as={`/posts/${slug}`}>
                                 <a className="hover:underline">
-                                    <h1 className="text-xl tracking-wide sm:tracking-normal text-center sm:text-left sm:text-3xl font-semibold leading-tight text-left">
+                                    <h2 className="text-xl tracking-wide sm:tracking-normal text-center sm:text-left sm:text-3xl font-semibold leading-tight text-left">
                                         {title}
-                                    </h1>
+                                    </h2>
                                 </a>
                             </Link>
 
