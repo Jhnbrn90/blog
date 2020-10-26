@@ -61,10 +61,28 @@ p > code, li > code {
 }
 
 pre {
-    font-size: 0.85rem !important;
+    font-size: 0.75rem !important;
     line-height: 1.7 !important;
     padding: 1.3em !important;
-    @apply .w-full .my-4 .bg-white .rounded .py-4 .px-3
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -100vw;
+    @apply .my-4 .bg-white .py-4 .px-3
+}
+
+@screen sm {
+    pre {
+        font-size: 0.85rem !important;
+        width: 100%;
+        left: auto;
+        right: auto;
+        margin-left: 0;
+        margin-right: 0;
+        @apply .w-full .bg-white .rounded .py-4 .px-3
+    }
 }
 
 ul {
