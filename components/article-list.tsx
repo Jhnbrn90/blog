@@ -13,7 +13,7 @@ export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element 
                 <article key={slug} className="flex mb-10 rounded bg-white shadow-lg p-6">
                     <div className="w-full sm:w-3/4 flex flex-col justify-between mr-4">
                         <div className="w-full text-justify">
-                            <Link href={'/posts/[slug]'} as={`/posts/${slug}`}>
+                            <Link href={'/posts/[slug]'} as={`/posts/${slug}`} passHref>
                                 <a className="hover:underline">
                                     <h2 className="text-xl tracking-wide sm:tracking-normal text-center sm:text-left sm:text-3xl font-semibold leading-tight text-left">
                                         {title}
@@ -30,7 +30,7 @@ export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element 
                             </p>
 
                             <div className="sm:block flex justify-center">
-                                <Link href={'/posts/[slug]'} as={`/posts/${slug}`}>
+                                <Link href={'/posts/[slug]'} as={`/posts/${slug}`} passHref>
                                     <a className="bg-blue-600 hover:no-underline hover:text-white px-3 py-2 rounded text-blue-100 hover:bg-blue-700 hover:shadow">
                                         Read more &rarr;
                                     </a>
