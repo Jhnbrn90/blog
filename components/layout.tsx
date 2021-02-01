@@ -7,7 +7,7 @@ export default function Layout({children}: {children: React.ReactNode}): JSX.Ele
         <>
             <Navigation />
 
-            <main className="sm:mx-auto w-full xl:w-5/6">
+            <main className="sm:mx-auto w-full xl:w-2/3">
                 {children}
             </main>
         </>
