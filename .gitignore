@@ -16,3 +16,5 @@ yarn-error.log*
 .env.production.local
 .vercel
 /public/rss.xml
+/public/sw.js*
+/public/workbox*
