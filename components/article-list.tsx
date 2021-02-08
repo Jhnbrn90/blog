@@ -44,9 +44,8 @@ export default function ArticleList({ posts } : { posts: Post[] }): JSX.Element 
                     </div>
 
                     <div className="sm:w-1/4 sm:block hidden flex justify-end items-start">
-                        <div
-                            className="flex h-auto w-auto overflow-hidden items-start sm:justify-end sm:items-end">
-                            <img alt={title} data-src={`/assets/posts/${slug}/${cover}`} className="lazyload w-4/5 rounded-lg"/>
+                        <div className="flex h-auto w-auto overflow-hidden items-start sm:justify-center sm:items-center">
+                            <img alt={title} data-src={`/assets/posts/${slug}/${cover}`} className="lazyload w-full rounded-lg"/>
                         </div>
                     </div>
                 </article>
