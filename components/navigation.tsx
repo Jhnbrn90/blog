@@ -6,7 +6,7 @@ export default function Navigation(): JSX.Element {
     return (
         <header className="sm:mb-10 sm:pb-5 sm:pt-8 sm:shadow-lg bg-white px-10">
             <div className="flex container mx-auto lg:max-w-screen">
-                <h1 className="flex w-full text-xl items-center sm:items-baseline">
+                <div className="flex w-full text-xl items-center sm:items-baseline">
                     <div className="w-full text-center">
                         <img
                             alt="Profile image for John Braun"
@@ -43,7 +43,7 @@ export default function Navigation(): JSX.Element {
                             </a>
                         </Link>
                     </div>
-                </h1>
+                </div>
             </div>
         </header>
     );
