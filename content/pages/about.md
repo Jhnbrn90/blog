@@ -1,4 +1,4 @@
-I'm John Braun, living in The Netherlands. I'm currently working at [Enrise](https://enrise.com) as a software developer. I created [LaravelPackage.com](https://laravelpackage.com) as an open-source tutorial to PHP package development.
+I'm John Braun, living in The Netherlands. I'm a software developer working mostly with Laravel and created [LaravelPackage.com](https://laravelpackage.com) as an open-source tutorial to PHP package development.
 
 This blog is built with [Next JS](https://nextjs.org/) and open source [on GitHub](https://github.com/Jhnbrn90/johnbraun.blog).
 
