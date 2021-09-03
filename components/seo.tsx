@@ -15,8 +15,7 @@ export default function SEO({title, description, image}: SEOProps): JSX.Element 
             <title>{siteTitle}</title>
             <meta charSet='utf-8'/>
             <meta httpEquiv='X-UA-Compatible' content='IE=edge'/>
-            <meta name='viewport'
-                  content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no'/>
+            <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no'/>
             <meta name='keywords' content=''/>
             <link rel="manifest" href="/manifest.json"/>
             <link href='/images/icons/icons-16.png' rel='icon' type='image/png' sizes='16x16'/>
@@ -27,23 +26,14 @@ export default function SEO({title, description, image}: SEOProps): JSX.Element 
             <meta name="keywords" content={siteMetadata.keywords} />
             <meta property="og:type" content="website" />
             <meta name="og:title" property="og:title" content={title ?? siteMetadata.title} />
-            <meta
-                name="og:description"
-                property="og:description"
-                content={metaDescription}
-            />
+            <meta name="og:description" property="og:description" content={metaDescription} />
             <meta property="og:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
             <meta name="twitter:card" content="summary" />
             <meta name="twitter:title" content={title ?? siteMetadata.title} />
             <meta name="twitter:description" content={metaDescription} />
             <meta name="twitter:creator" content={siteMetadata.social.twitter} />
             <meta name="twitter:image" content={`${siteMetadata.siteUrl}/assets/${image}`} />
-            <link
-                rel="alternate"
-                type="application/rss+xml"
-                title="RSS feed for John Braun's blog posts"
-                href={`${siteMetadata.siteUrl}/rss.xml`}
-            />
+            <link rel="alternate" type="application/rss+xml" title="RSS feed for John Braun's blog posts" href={`${siteMetadata.siteUrl}/rss.xml`} />
         </Head>
     );
 }
