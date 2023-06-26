@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="{{ DEFAULT_LANG }}"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="{{ DEFAULT_LANG }}">
+<!--<![endif]-->
+	<head>
+    {% block head %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="{{ AUTHOR }}">
+
+        {% if GOOGLE_SITE_VERIFICATION %}
+            <meta name="google-site-verification" content="{{ GOOGLE_SITE_VERIFICATION }}">
+        {% endif %}
+
+        <title>{{ SITENAME }}{% block title %}{% if SITESUBTITLE and SHOW_SITESUBTITLE_IN_HTML %} - {{ SITESUBTITLE }}{% endif %}{% endblock title %}</title>
+
+        {% if FEED_ALL_ATOM %}
+            <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Full Atom Feed" />
+        {% endif %}
+        {% if FEED_ALL_RSS %}
+            <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Full RSS Feed" />
+        {% endif %}
+        {% if FEED_ATOM %}
+            <link href="{{ FEED_DOMAIN }}/{{ FEED_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Atom Feed" />
+        {% endif %}
+        {% if FEED_RSS %}
+            <link href="{{ FEED_DOMAIN }}/{{ FEED_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} RSS Feed" />
+        {% endif %}
+        {% if CATEGORY_FEED_ATOM and category %}
+            <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_ATOM|format(slug=category.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Categories Atom Feed" />
+        {% endif %}
+        {% if CATEGORY_FEED_RSS and category %}
+            <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_RSS|format(slug=category.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Categories RSS Feed" />
+        {% endif %}
+        {% if TAG_FEED_ATOM and tag %}
+            <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_ATOM|format(slug=tag.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Tags Atom Feed" />
+        {% endif %}
+        {% if TAG_FEED_RSS and tag %}
+            <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_RSS|format(slug=tag.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Tags RSS Feed" />
+        {% endif %}
+        <!-- FAVICON -->
+        {% if FAVICON %}
+           <link rel="icon" href="{{ SITEURL }}/images/{{ FAVICON }}" type="image/gif">
+        {% endif %}
+        <!-- CSS -->
+        <link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        {% if THEME_COLOR %}
+        	<link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/colors/{{ THEME_COLOR }}.css" id="colors">
+        {% else %}
+        	<link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/colors/blue.css" id="colors">
+        {% endif %}
+
+        <!-- Code highlight color scheme -->
+        {% if COLOR_SCHEME_CSS %}
+            <link href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/code_blocks/{{ COLOR_SCHEME_CSS }}" rel="stylesheet">
+        {% else %}
+            <link href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/code_blocks/darkly.css" rel="stylesheet">
+        {% endif %}
+
+        {% if CSS_OVERRIDE %}
+            <!-- CSS specified by the user -->
+            <link href="{{ SITEURL }}/{{ CSS_OVERRIDE }}" rel="stylesheet">
+        {% endif %}
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+				{% if ANALYTICS_CODE %}
+					{{ ANALYTICS_CODE }}
+				{% endif %}
+    {% endblock head %}
+		{% block opengraph %}
+      {% for LOC in LOCALE %}
+          <meta property="og:locale" content="{{ LOC }}">
+      {% endfor %}
+			<meta property="og:site_name" content="{{ SITENAME }}">
+		{% endblock opengraph %}
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+				{% if LOGO %}
+					<div id="logo">
+						<a href="{{ SITEURL }}/"><img src="{{ SITEURL }}/images/{{ LOGO }}"></a>
+					</div>
+				{% else %}
+					<div id="textlogo">
+						<h1><a href="{{ SITEURL }}/">{{ SITENAME }}</a></h1>
+					</div>
+				{% endif %}
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="{{ SITEURL }}/">Home</a></li>
+
+							{% for title, link in MENUITEMS %}
+							    <li><a href="{{ link }}">{{ title }}</a></li>
+							{% endfor %}
+
+							{% if DISPLAY_PAGES_ON_MENU %}
+							    {% for p in pages %}
+							        <li{% if p == page %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ p.url }}">{{ p.title }}</a></li>
+							    {% endfor %}
+							{% elif DISPLAY_CATEGORIES_ON_MENU %}
+						        {% for cat, null in categories %}
+						            <li{% if cat == category %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ cat.url }}">{{ cat }}</a></li>
+						        {% endfor %}
+							{% endif %}
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				{% if LOGO %}
+					<div class="five columns">
+							<h3>{{ SITENAME }}</h3>
+					</div>
+				{% endif %}
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="{{ SITEURL }}/">Home</a></li>
+							{% block page_breadcrumbs %}{% endblock page_breadcrumbs %}
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+				{% block content_placeholder %}{% endblock content_placeholder %}
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/js/jquery.min.js"></script>
+	</body>
+</html>
