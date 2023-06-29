@@ -1,7 +1,7 @@
-The source code of https://johnbraun.blog.
+The source code of https://johnbraun.nl.
 
 ## JohnBraun's weblog
-JohnBraun.blog is built using Pelican.
+JohnBraun.nl is built with [Pelican](https://getpelican.com/).
 
 #### Contributing
 If you'd like to contribute, clone the default branch of this repo.
