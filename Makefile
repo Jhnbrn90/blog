@@ -9,7 +9,7 @@ CONFFILE=$(BASEDIR)/pelicanconf.py
 PUBLISHCONF=$(BASEDIR)/publishconf.py
 
 GITHUB_PAGES_BRANCH=gh-pages
-GITHUB_PAGES_DOMAIN=johnbraun.blog
+GITHUB_PAGES_DOMAIN=johnbraun.nl
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
