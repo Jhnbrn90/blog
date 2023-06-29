@@ -1,0 +1,374 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - Using promises to indicate progress to waiting users</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Using promises to indicate progress to waiting users">
+    <meta property="og:url" content="using-promises-to-indicate-progress-to-waiting-users.html">
+    <meta property="og:description" content="Sometimes in your web application you will need to perform some (really) slow tasks. It can be helpful to inform your users that there is some kind of progress while they are waiting. In this post, I want to discuss a possible solution toward creating a progress indicator.">
+    <meta property="article:published_time" content="Saturday, September 07, 2019">
+    <meta name="twitter:title" content="Using promises to indicate progress to waiting users">
+    <meta name="twitter:description" content="Sometimes in your web application you will need to perform some (really) slow tasks. It can be helpful to inform your users that there is some kind of progress while they are waiting. In this post, I want to discuss a possible solution toward creating a progress indicator.">
+    <meta name="description" content="Sometimes in your web application you will need to perform some (really) slow tasks. It can be helpful to inform your users that there is some kind of progress while they are waiting. In this post, I want to discuss a possible solution toward creating a progress indicator.">
+    <meta name="twitter:image" content="posts/showing-users-progress-on-slow-requests/cover.jpeg">
+    <meta property="og:image" content="posts/showing-users-progress-on-slow-requests/cover.jpeg">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/using-promises-to-indicate-progress-to-waiting-users.html">
+	<meta property="og:title" content="Using promises to indicate progress to waiting users">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/showing-users-progress-on-slow-requests/cover.jpeg">
+	<meta property="article:published_time" content="2019-09-07 00:00:00+02:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>Using promises to indicate progress to waiting users</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/using-promises-to-indicate-progress-to-waiting-users.html">Using promises to indicate progress to waiting users</a>
+            </h2>
+			<ul>
+				<li>Published: 07-09-2019</li>
+			</ul>
+		</header>
+
+		<h2>Introduction</h2>
+<p>Recently, I got inspired by <a href="https://twitter.com/m1guelpf/status/1170010256480645122">this tweet</a> by Miguel Piedrafita in which he stresses the importance of including some form of progress indicators whenever your application needs to perform one or more slow (background) tasks/processes. In his example, the users' website needs to be saved to a database, added to a deployment platform and dispatched for first deploy.</p>
+<p><img alt="Showing the user what's going on" src="images/posts/showing-users-progress-on-slow-requests/progress.png"></p>
+<p>Like Miguel mentions, by adding small indicators to each of these running processes your users are reassured something is happening and they just need to be patient.</p>
+<p>After I reading this tip, I wondered how to achieve these progress indicators. In this post I want to share my approach, using <strong>VueJS</strong>.</p>
+<p>I do not claim this to be the best available option and I'm open to alternative solutions and improvements.</p>
+<p>The code is available on <a href="https://codesandbox.io/embed/progress-indicator-ixdl9">CodeSandbox.</a></p>
+<h2>My approach</h2>
+<p>Since we'll need to update the progress in realtime, I like to defer to <strong>VueJS</strong>, my javascript framework of choice.</p>
+<p>Ultimately we want to display a list of tasks, which are processed <em>sequentially.</em> To this extent we'll leverage javascript's <code>async/await</code> functionality. Additionally, the tasks should indicate whenever they're finished and show an <a href="https://epic-spinners.epicmax.co/#/">epic spinner</a> (by <a href="https://epicmax.co/">Epicmax</a>) in the meantime. An example of our desired end result is shown below:</p>
+<p><img alt="Process Indicators" src="images/posts/showing-users-progress-on-slow-requests/process-indicators.gif"></p>
+<h3>Object representation of a single process</h3>
+<p>To achieve this, I was thinking of the following object representation of a single process: we specify a <code>**name**</code>, the <code>**work**</code> that needs to be done with a <strong>callback</strong> (returning a Promise) and lastly keep track of its state through a <code>**finished**</code> boolean.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Collecting credentials&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">work</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// perform the task</span>
+
+<span class="w">        </span><span class="c1">// resolve the promise</span>
+<span class="w">        </span><span class="nx">resolve</span><span class="p">()</span>
+<span class="w">    </span><span class="p">}),</span>
+<span class="w">    </span><span class="nx">finished</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Note: we're only passing a <code>resolve</code> argument to the <strong>Promise</strong> object for now, ignoring potential failures. Make sure to check out the <em>"not-so-happy-path"</em> section in the <strong>Conclusion</strong> on managing (potential) errors.</p>
+<h3>Building the Vue component</h3>
+<p>With this approach and end goal in mind, we can shape our basic Vue component, in which we'll register three processes: 'Collecting credentials', 'Saving to database' and 'Finishing up registration'. For this demo, let's <em>simulate</em> performing <strong>work</strong> by a <code>setTimeout</code> function, waiting for 2 seconds (2000 ms):</p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+<span class="o">//</span> <span class="k">if</span> <span class="n">we</span> <span class="n">want</span> <span class="n">to</span> <span class="n">use</span> <span class="n">the</span> <span class="n">epic</span> <span class="n">spinner</span><span class="p">,</span> <span class="n">let</span><span class="s1">&#39;s import it here</span>
+<span class="kn">import</span> <span class="p">{</span> <span class="n">LoopingRhombusesSpinner</span> <span class="p">}</span> <span class="kn">from</span> <span class="s1">&#39;epic-spinners&#39;</span><span class="p">;</span>
+
+<span class="n">export</span> <span class="n">default</span> <span class="p">{</span>
+  <span class="o">//</span> <span class="ow">and</span> <span class="n">declare</span> <span class="n">the</span> <span class="n">epic</span> <span class="n">spinner</span> <span class="n">component</span> <span class="n">here</span>
+  <span class="n">components</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">LoopingRhombusesSpinner</span>
+  <span class="p">},</span>
+
+  <span class="n">data</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="n">processes</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;Collecting credentials&#39;</span><span class="p">,</span>
+          <span class="n">work</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="n">new</span> <span class="n">Promise</span><span class="p">(</span><span class="n">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="n">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="n">resolve</span><span class="p">(),</span> <span class="mi">2000</span><span class="p">);</span>
+          <span class="p">}),</span>
+          <span class="n">finished</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="p">},</span>
+
+        <span class="p">{</span>
+          <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;Collecting credentials&#39;</span><span class="p">,</span>
+          <span class="n">work</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="n">new</span> <span class="n">Promise</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+          <span class="n">finished</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="p">},</span>
+
+        <span class="p">{</span>
+          <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;Collecting credentials&#39;</span><span class="p">,</span>
+          <span class="n">work</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="n">new</span> <span class="n">Promise</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+          <span class="n">finished</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="p">},</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<p>Now we have access to our loading spinner and the <code>processes</code> property, we can generate a list of processes in the <strong>template:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">    </span><span class="nt">&lt;ul&gt;</span>
+<span class="w">      </span><span class="nt">&lt;li</span><span class="w"> </span><span class="na">:key=</span><span class="s">&quot;process.name&quot;</span><span class="w"> </span><span class="na">v-for=</span><span class="s">&quot;process in processes&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="cp">{{</span> <span class="nv">process.name</span> <span class="cp">}}</span>
+
+<span class="w">        </span><span class="nt">&lt;span</span><span class="w"> </span><span class="na">v-if=</span><span class="s">&quot;process.finished&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;check;</span><span class="nt">&lt;/span&gt;</span>
+
+<span class="w">        </span><span class="nt">&lt;looping-rhombuses-spinner</span><span class="w"> </span><span class="err">v-else</span>
+<span class="w">          </span><span class="na">style=</span><span class="s">&quot;display: inline-block;&quot;</span>
+<span class="w">          </span><span class="na">:animation-duration=</span><span class="s">&quot;2500&quot;</span>
+<span class="w">          </span><span class="na">:rhombus-size=</span><span class="s">&quot;6&quot;</span>
+<span class="w">          </span><span class="na">color=</span><span class="s">&quot;#ff1d5e&quot;</span>
+<span class="w">        </span><span class="nt">/&gt;</span>
+<span class="w">      </span><span class="nt">&lt;/li&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/ul&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+</code></pre></div>
+
+<p>With the template in place, we need to make sure that our processes start whenever the page is loaded. We can do so by hooking in to Vue's <code>mounted()</code> lifecycle hook.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">  </span>components:<span class="w"> </span>{
+<span class="w">  </span>//<span class="w"> </span>...
+<span class="w">  </span>},
+
+<span class="w">  </span>data()<span class="w"> </span>{
+<span class="w">    </span>//...
+<span class="w">  </span>},
+
+<span class="w">  </span>mounted()<span class="w"> </span>{
+<span class="w">    </span>this.initialize();
+<span class="w">  </span>},
+
+<span class="w">  </span>methods:<span class="w"> </span>{
+<span class="w">    </span>async<span class="w"> </span>initialize()<span class="w"> </span>{
+<span class="w">      </span>for<span class="w"> </span>await<span class="w"> </span>(const<span class="w"> </span>process<span class="w"> </span>of<span class="w"> </span>this.processes)<span class="w"> </span>{
+<span class="w">        </span>await<span class="w"> </span>process.work();
+<span class="w">        </span>process.finished<span class="w"> </span>=<span class="w"> </span>true;
+<span class="w">      </span>}
+<span class="w">    </span>}
+<span class="w">  </span>}
+}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<p>In our <code>initialize()</code> method (which is called when the component was created) we want to loop over the processes and perform the work of each process in sequential order by handling the promises one by one using <code>await</code> before continuing to the next task. This requires that we declare the method as <code>async initialize()</code>. Since we are working with Promises, we can not simply use a <code>forEach</code> loop to iterate over the processes. Instead, we use a <code>for/of</code> loop (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of">MDN reference</a>) which allows us to iterate over interable objects (in our case the asynchronous processes). After the work has been performed, we'll mark a process as finished which dynamically updates the loading spinner to a checkmark.</p>
+<h2>Conclusion</h2>
+<p>We've made a basic process indicator Vue component, in which we can define multiple tasks by declaring a <strong>name</strong>, (initial) <strong>state</strong> and a <strong>callback</strong>. The tasks are then executed sequentially and their "finished" state is updated in realtime.</p>
+<p>For our demo purposes we've simulated the workload with a <code>setTimeout()</code>, however in real life this would probably be an AJAX call which could look as follows (using axios):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nx">work</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;https://johnbraun.blog&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// (optional) do something with the response ...</span>
+<span class="w">    </span><span class="nx">resolve</span><span class="p">();</span>
+<span class="w">    </span><span class="p">})</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>💡 You might want to add additional tasks at runtime, which you can easily do by adding the following method to your component:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;script&gt;</span>
+<span class="w">  </span>//<span class="w"> </span>...
+<span class="w">  </span>methods:<span class="w"> </span>{
+<span class="w">    </span>addProcess(name,<span class="w"> </span>callback)<span class="w"> </span>{
+<span class="w">        </span>this.processes.push({
+<span class="w">            </span>name:<span class="w"> </span>name,
+<span class="w">            </span>work:<span class="w"> </span>callback,
+<span class="w">            </span>finished:<span class="w"> </span>false,
+<span class="w">        </span>});
+<span class="w">        </span>return<span class="w"> </span>this;
+<span class="w">    </span>}
+<span class="w">  </span>}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<h2>Some last remarks</h2>
+<h3>Handling queued processes in the backend</h3>
+<p>Now, there might be situations where the processes are <strong>queued</strong> on your backend. In that scenario, the above discussed frontend solution doesn't suffice and I would advise to defer to a websocket implementation. Websockets allow realtime communication from the backend to the frontend. You might have a look at my post on using <a href="https://johnbraun.blog/posts/websockets-in-laravel">websockets in Laravel</a>, which explains how to communicate changes in a queued job back to the frontend.</p>
+<h3>The not-so-happy path</h3>
+<p>So far, we only discussed the happy path, but let's be realistic: what if a process fails? Javascript's <code>Promise()</code> object accepts - in addition to 'resolve' - another argument 'reject' to indicate failure.</p>
+<p>In this regard, we should dissect the code for a single "process" in our component into a part that resolves the promise when succesful, and rejects the promise upon failure.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Saving to database&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">work</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span><span class="w"> </span><span class="nx">reject</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;https://www.johnbraun.blog&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">resolve</span><span class="p">(</span><span class="nx">response</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+
+<span class="w">    </span><span class="p">}),</span>
+<span class="w">  </span><span class="nx">finished</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Aditionally, you might want to halt all other sequential processes since we're dealing with a failure. One way to go about it is to delete all remaining processes from the array, making sure the <code>.work()</code> method is not called. We also should store the process which failed to show a big red cross.</p>
+<p>To accomdate for potential failure, one way to go about it is to let the user know which process failed (with a big red cross) and delete all remaining, unexecuted processes from the array preventing the remaining <code>.work()</code> methods being called. Additionally, we store the process in an 'errors' property so we can show the user which process failed.</p>
+<p>These changes are summarized in the code block below, and also available on the <a href="https://codesandbox.io/embed/progress-indicator-ixdl9">Codesandbox page</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="nt">&lt;div&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ul&gt;</span>
+<span class="w">    </span><span class="nt">&lt;li</span><span class="w"> </span><span class="na">:key=</span><span class="s">&quot;process.name&quot;</span><span class="w"> </span><span class="na">v-for=</span><span class="s">&quot;process in processes&quot;</span><span class="nt">&gt;</span>
+<span class="w">      </span><span class="cp">{{</span> <span class="nv">process.name</span> <span class="cp">}}</span>
+
+<span class="w">      </span><span class="nt">&lt;span</span><span class="w"> </span><span class="na">v-if=</span><span class="s">&quot;process.finished&quot;</span><span class="w"> </span><span class="na">style=</span><span class="s">&quot;color: green;&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;check;</span><span class="nt">&lt;/span&gt;</span>
+<span class="w">      </span><span class="nt">&lt;span</span><span class="w"> </span><span class="na">v-if=</span><span class="s">&quot;errors.includes(process)&quot;</span><span class="w"> </span><span class="na">style=</span><span class="s">&quot;color: red;&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;cross;</span><span class="nt">&lt;/span&gt;</span>
+
+<span class="w">      </span><span class="nt">&lt;looping-rhombuses-spinner</span><span class="w"> </span><span class="na">v-if=</span><span class="s">&quot;!process.finished &amp;&amp; !errors.includes(process)&quot;</span>
+<span class="w">        </span><span class="na">style=</span><span class="s">&quot;display: inline-block;&quot;</span>
+<span class="w">        </span><span class="na">:animation-duration=</span><span class="s">&quot;2500&quot;</span>
+<span class="w">        </span><span class="na">:rhombus-size=</span><span class="s">&quot;6&quot;</span>
+<span class="w">        </span><span class="na">color=</span><span class="s">&quot;#ff1d5e&quot;</span>
+<span class="w">      </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/li&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/ul&gt;</span>
+
+<span class="w">  </span><span class="nt">&lt;p</span><span class="w"> </span><span class="na">v-if=</span><span class="s">&quot;errors.length &gt; 0&quot;</span><span class="w"> </span><span class="na">style=</span><span class="s">&quot;color:red;&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span>Something<span class="w"> </span>went<span class="w"> </span>wrong,<span class="w"> </span>so<span class="w"> </span>we<span class="w"> </span>bailed...
+<span class="w">  </span><span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">  </span>data()<span class="w"> </span>{
+<span class="w">    </span>return<span class="w"> </span>{
+<span class="w">      </span>//<span class="w"> </span>keep<span class="w"> </span>track<span class="w"> </span>which<span class="w"> </span>process(es)<span class="w"> </span>failed
+<span class="w">      </span>errors:<span class="w"> </span>[]
+<span class="w">    </span>}
+<span class="w">  </span>},
+
+<span class="w">  </span>methods:<span class="w"> </span>{
+<span class="w">    </span>async<span class="w"> </span>initialize()<span class="w"> </span>{
+<span class="w">      </span>for<span class="w"> </span>await<span class="w"> </span>(const<span class="w"> </span>process<span class="w"> </span>of<span class="w"> </span>this.processes)<span class="w"> </span>{
+<span class="w">        </span>await<span class="w"> </span>process.work()
+<span class="w">          </span>.then(()<span class="w"> </span>=&gt;<span class="w"> </span>{
+<span class="w">            </span>this.markFinished(process);
+<span class="w">          </span>})
+<span class="w">          </span>.catch((reject)<span class="w"> </span>=&gt;<span class="w"> </span>{
+<span class="w">            </span>this.errors.push(process);
+
+<span class="w">            </span>this.haltIteration(process);
+<span class="w">      </span>});
+<span class="w">    </span>},
+
+<span class="w">    </span>haltIteration(process)<span class="w"> </span>{
+<span class="w">      </span>//<span class="w"> </span>get<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>item&#39;s<span class="w"> </span>index
+<span class="w">      </span>let<span class="w"> </span>index<span class="w"> </span>=<span class="w"> </span>this.processes.indexOf(process);
+
+<span class="w">      </span>//<span class="w"> </span>determine<span class="w"> </span>how<span class="w"> </span>many<span class="w"> </span>processes<span class="w"> </span>are<span class="w"> </span>left
+<span class="w">      </span>let<span class="w"> </span>items<span class="w"> </span>=<span class="w"> </span>this.processes.length;
+
+<span class="w">      </span>//<span class="w"> </span>remove<span class="w"> </span>other<span class="w"> </span>processes<span class="w"> </span>from<span class="w"> </span>being<span class="w"> </span>executed.
+<span class="w">      </span>this.processes.splice(index<span class="w"> </span>+<span class="w"> </span>1,<span class="w"> </span>items<span class="w"> </span>-<span class="w"> </span>1);
+<span class="w">    </span>}
+
+<span class="w">  </span>}
+}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>

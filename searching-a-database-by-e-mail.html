@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - Searching a database by e-mail</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Searching a database by e-mail">
+    <meta property="og:url" content="searching-a-database-by-e-mail.html">
+    <meta property="og:description" content="Using Laravel Mailbox to allow users to search (multiple) databases and receive the results as a reply to their e-mail.">
+    <meta property="article:published_time" content="Friday, October 18, 2019">
+    <meta name="twitter:title" content="Searching a database by e-mail">
+    <meta name="twitter:description" content="Using Laravel Mailbox to allow users to search (multiple) databases and receive the results as a reply to their e-mail.">
+    <meta name="description" content="Using Laravel Mailbox to allow users to search (multiple) databases and receive the results as a reply to their e-mail.">
+    <meta name="twitter:image" content="posts/search-database-by-email/cover.png">
+    <meta property="og:image" content="posts/search-database-by-email/cover.png">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/searching-a-database-by-e-mail.html">
+	<meta property="og:title" content="Searching a database by e-mail">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/search-database-by-email/cover.png">
+	<meta property="article:published_time" content="2019-10-18 00:00:00+02:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>Searching a database by e-mail</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/searching-a-database-by-e-mail.html">Searching a database by e-mail</a>
+            </h2>
+			<ul>
+				<li>Published: 18-10-2019</li>
+			</ul>
+		</header>
+
+		<h2>Introduction</h2>
+<p>In this post, I want to share my experience when I introduced a feature for my research group where my colleagues can send their "<em>grocery list</em>" to a chemicals database and get a reply containing all found hits, using the <a href="https://docs.beyondco.de/laravel-mailbox/">Laravel Mailbox</a> package by <a href="https://twitter.com/marcelpociot">Marcel Pociot</a>. A small problem: the databases are only accessible from the campus WiFi network. In this post I like to address how I circumvented the limitations of this <strong>firewall</strong>.</p>
+<h2>About the research group</h2>
+<p>As you might know, I am an organic chemist in the SyBOrCh ("Synthetic &amp; BioOrganic Chemistry") research group at the VU in Amsterdam. If you want to read the story of how I became a programmer, make sure to check out the about page.</p>
+<p>Long story short, I have made several web applications (depicted in the screenshot of the intranet page below), enhancing the workflow of our teams including two databases storing our chemicals.</p>
+<p><img alt="SyBOrCh homepage" src="images/posts/search-database-by-email/homepage.png"></p>
+<p>In our department we share the floor with two other chemistry groups and we have these two databases in common that contain information about the chemicals we use (location, properties, quantities, etc.). </p>
+<p><img alt="Chemicals Database" src="images/posts/search-database-by-email/chemicals-database.png">
+)</p>
+<p>When planning an experiment, it is important to know which chemicals are in stock (in both databases).</p>
+<p>I was playing with the idea to make use of the <a href="https://docs.beyondco.de/laravel-mailbox/">Laravel Mailbox</a> package to make it possible to send a "<em>grocery list</em>" to either one (or even both!) of the databases and get a list of hits.</p>
+<h2>Behind a Firewall</h2>
+<p>The problem is that our databases are shielded by a firewall of the university, which makes it impossible to reach the <strong>webhook</strong>. So, the simple approach to listen for incoming e-mails in the databases is off the table.</p>
+<p>Since our databases can only <strong>make</strong> external requests but not <strong>receive</strong> external requests, my idea was to have an externally reachable <strong>intermediate application</strong>, which is responsible for storing incoming e-mails.</p>
+<p>Next, using a <strong>scheduled artisan command</strong> I wanted both databases (syborch / medchem) to retrieve any new e-mails by calling a certain <strong>endpoint</strong> ('/groups/syborch' or '/groups/medchem') on this "intermediate application".</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="c1">// In the database&#39;s Artisan command</span>
+
+<span class="nx">handle</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// Call the endpoint on the intermediate app</span>
+  <span class="c1">// Using Guzzle Http client</span>
+  <span class="nv">$response</span> <span class="o">=</span> <span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">(</span><span class="k">new</span> <span class="nx">Client</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;https://my-intermediate-app.com/groups/syborch&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getBody</span><span class="p">();</span>
+
+  <span class="nv">$mails</span> <span class="o">=</span> <span class="nx">collect</span><span class="p">(</span><span class="nb">json_decode</span><span class="p">(</span><span class="nv">$response</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The "intermediate application" will return any 'unprocessed' emails with their <code>id</code> and <code>keywords</code> and subsequentially mark them as processsed. The keywords are extracted from the e-mail by newlines via a keywords() method that uses the following regex: <code>$newlines = "/\r\n|\n|\r/"</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="c1">// In the intermediate application&#39;s controller </span>
+<span class="c1">// associated with the &#39;/groups/{group}&#39; route</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">fetchMails</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="nv">$mails</span> <span class="o">=</span> <span class="nx">ReceivedMail</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;processed_at&#39;</span><span class="p">,</span> <span class="k">null</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;group&#39;</span><span class="p">,</span> <span class="nv">$group</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">();</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$mails</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[];</span>
+  <span class="p">}</span>
+
+  <span class="nv">$mails</span><span class="o">-&gt;</span><span class="na">each</span><span class="o">-&gt;</span><span class="na">update</span><span class="p">([</span><span class="s1">&#39;processed_at&#39;</span> <span class="o">=&gt;</span> <span class="nx">now</span><span class="p">()]);</span>
+
+  <span class="k">return</span> <span class="nv">$mails</span><span class="o">-&gt;</span><span class="na">map</span><span class="p">(</span><span class="k">function</span> <span class="p">(</span><span class="nv">$mail</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span>
+      <span class="s1">&#39;id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">,</span>
+      <span class="s1">&#39;keywords&#39;</span> <span class="o">=&gt;</span> <span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">keywords</span><span class="p">(),</span>
+    <span class="p">];</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The corresponding database will then perform a search against all keywords and generate a <code>$results</code> array, indexed by the keyword. Then, a POST request will be send to the "intermediate application" containing the e-mail's id and the search results.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="c1">// In the database&#39;s Artisan command</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">handle</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// retrieve the e-mails</span>
+
+  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$mails</span> <span class="k">as</span> <span class="nv">$mail</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$results</span> <span class="o">=</span> <span class="p">[];</span>
+
+    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">keywords</span> <span class="k">as</span> <span class="nv">$keyword</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nv">$results</span><span class="p">[</span><span class="nv">$keyword</span><span class="p">]</span> <span class="o">=</span> <span class="c1">// retrieve results for the keyword</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Post the results back to the intermediate application</span>
+    <span class="c1">// using Guzzle Http client</span>
+    <span class="p">(</span><span class="k">new</span> <span class="nx">Client</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">request</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;https://my-intermediate-app.com/queries&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s1">&#39;json&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+            <span class="s1">&#39;mailId&#39;</span> <span class="o">=&gt;</span> <span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">,</span>
+            <span class="s1">&#39;results&#39;</span> <span class="o">=&gt;</span> <span class="nv">$results</span>
+        <span class="p">]</span>
+    <span class="p">]);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Back in the "intermediate application", the POST request is received. The corresponding e-mail is requested and a reply is prepared containing all search results.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="c1">// In the intermediate application&#39;s controller </span>
+<span class="c1">// associated with the &#39;/queries&#39; route</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">reply</span><span class="p">(</span><span class="nx">Request</span> <span class="nv">$request</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="nv">$mail</span> <span class="o">=</span> <span class="nx">ReceivedMail</span><span class="o">::</span><span class="na">findOrFail</span><span class="p">(</span><span class="nv">$request</span><span class="o">-&gt;</span><span class="na">mailId</span><span class="p">);</span>
+
+  <span class="nx">Mail</span><span class="o">::</span><span class="na">to</span><span class="p">(</span><span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">sender</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="k">new</span> <span class="nx">SearchResultsMail</span><span class="p">(</span><span class="nv">$mail</span><span class="p">,</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">results</span><span class="p">));</span>
+
+  <span class="k">return</span> <span class="nx">response</span><span class="p">([],</span> <span class="mi">200</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2>Receiving the e-mails</h2>
+<p>Following <a href="https://johnbraun.blog/posts/incoming-mail-laravel-mailbox">my previous blog</a> on the Laravel Mailbox package, I found out that when using Mailgun, the webhook was not called. I didn't figure out the exact reason, but I also needed to enable "<strong>forwarding</strong>" (on top of the "Store and notify" option) in Mailgun and use the same webhook URL as mentioned. After enabling this option, everything worked as expected.</p>
+<p>Following <a href="https://johnbraun.blog/posts/incoming-mail-laravel-mailbox">my previous blog</a> on the Laravel Mailbox package, I found out that when using Mailgun, the webhook was not called. I didn't figure out the exact reason, but I also needed to enable "<strong>forwarding</strong>" (on top of the "Store and notify" option) in Mailgun and use the same webhook URL as mentioned. After enabling this option, everything worked as expected.</p>
+<p><img alt="Mailgun - Forwarding Rule" src="images/posts/search-database-by-email/forwarding-rule.png"></p>
+<p>In the "intermediate application", I listen for e-mails sent to 'syborch@[a-certain-address].com' and 'medchem@[a-certain-address].com' which have different handlers, storing the <code>ReceivedMail</code> models and setting the appropriate 'group'.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="c1">// In the intermediate application&#39;s AppServiceProvider.php</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">boot</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="nx">Mailbox</span><span class="o">::</span><span class="na">to</span><span class="p">(</span><span class="s1">&#39;syborch@[redacted]&#39;</span><span class="p">,</span> <span class="nx">SyborchMailHandler</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+    <span class="nx">Mailbox</span><span class="o">::</span><span class="na">to</span><span class="p">(</span><span class="s1">&#39;medchem@[redacted]&#39;</span><span class="p">,</span> <span class="nx">MedchemMailHandler</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2>Conclusion</h2>
+<h3>New workflow</h3>
+<p>Our research group can now send an enter-separated "grocery list" to either one or both of the databases after they will receive a comprehensive list of chemicals we have stored. I bet this is going to save a lot of time in the preparation for bigger experiments.</p>
+<p>Example of the e-mail reply from the database:</p>
+<p><img alt="Example e-mail" src="images/posts/search-database-by-email/email-example.png"></p>
+<h3>Cronjob</h3>
+<p>For now, I've set a cronjob that executes the artisan command for both databases at every minute. It is not ideal, but the best approach I could think of since we can't directly listen to a webhook from Mailgun since we're behind the firewall.</p>
+<h3>Mailgun</h3>
+<p>Furthermore, I had to use "Forwarding" in combination with the "Store and Notify" services within Mailgun. Also, make sure to use the <strong>webhook-key</strong> as the <code>MAILBOX_MAILGUN_KEY</code>.</p>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>

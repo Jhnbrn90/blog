@@ -1,0 +1,415 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - Mutation Testing</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Mutation Testing">
+    <meta property="og:url" content="mutation-testing.html">
+    <meta property="og:description" content="Mutation testing is a great tool to analyze and increase the reliability of your test suite. This post highlights the concepts of Mutation Testing, how to get started using Infection PHP, and how to use mutation tests in your CI workflow.">
+    <meta property="article:published_time" content="Wednesday, February 10, 2021">
+    <meta name="twitter:title" content="Mutation Testing">
+    <meta name="twitter:description" content="Mutation testing is a great tool to analyze and increase the reliability of your test suite. This post highlights the concepts of Mutation Testing, how to get started using Infection PHP, and how to use mutation tests in your CI workflow.">
+    <meta name="description" content="Mutation testing is a great tool to analyze and increase the reliability of your test suite. This post highlights the concepts of Mutation Testing, how to get started using Infection PHP, and how to use mutation tests in your CI workflow.">
+    <meta name="twitter:image" content="posts/mutation-testing/cover.png">
+    <meta property="og:image" content="posts/mutation-testing/cover.png">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/mutation-testing.html">
+	<meta property="og:title" content="Mutation Testing">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/mutation-testing/cover.png">
+	<meta property="article:published_time" content="2021-02-10 00:00:00+01:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>Mutation Testing</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/mutation-testing.html">Mutation Testing</a>
+            </h2>
+			<ul>
+				<li>Published: 10-02-2021</li>
+			</ul>
+		</header>
+
+		<h2>Introduction</h2>
+<p>How do you determine if the current test suite adds enough value? Do the tests cover all edge cases? If you solely rely on <strong>code coverage</strong>, you might be missing out. </p>
+<p>In a recent talk at the <a href="https://laracon.eu/online/discover/conference/?21">Laracon EU Online</a> conference, my colleague <a href="https://jeroeng.dev/">Jeroen Groenendijk</a> highlighted the significance of  <em>Mutation Testing</em> in achieving <strong>greater confidence</strong> in the <strong>test suite</strong> of your application.</p>
+<p>In this blog, I'd like to highlight the concepts of <a href="https://en.wikipedia.org/wiki/Mutation_testing">Mutation Testing</a>, explain how to get started using <a href="https://infection.github.io/">Infection PHP</a> by <a href="https://twitter.com/maks_rafalko">Maks Rafalko</a>, show some practical examples and finally explain how to use Mutation Testing in a CI setup.</p>
+<h2>What is Mutation Testing</h2>
+<p>A mutation testing tool will manipulate (<em>mutate</em>) pieces of your source code and run the test suite against this piece of <em>mutant</em> source code. The mutated code <strong>should</strong> trigger a failing test, or the mutant <strong>escapes</strong>. Escaped mutants are a sign of weakly tested code.</p>
+<p>As an illustration, take a look at the following example.</p>
+<p><img alt="Mutation Testing Diagram" src="images/posts/mutation-testing/diagram.png"></p>
+<p>The <code>add()</code> method is mutated in three different ways:</p>
+<blockquote>
+<ul>
+<li>The method returns <code>null</code></li>
+<li>The <code>+</code> operator changed to the <code>-</code> operator</li>
+<li>Method visibility changed from <code>public</code> to <code>protected</code></li>
+</ul>
+</blockquote>
+<p>In the diagram, the tests fail if <code>null</code> is returned and when the addition is replaced with a subtraction. However, the method's visibility is likely too broad. Hence <em>mutating</em> it to <code>protected</code> didn't yield a failing test. Therefore, it should be changed to <code>protected</code> or even <code>private</code>, adhering to the best practice of keeping the public API of this class to the minimum.</p>
+<h2>Getting started with Infection PHP</h2>
+<p>If you want to play around, check the <a href="https://infection-php.dev/">Infection Playground</a>, where you can write the code, tests, and run Infection right from within your browser. Read on to learn more about setting up Infection PHP in your project.</p>
+<h3>Setting up Infection PHP</h3>
+<p>Infection requires PHP version 7.2 (or higher) and an enabled debugger of choice: <a href="https://xdebug.org/">Xdebug</a>, <a href="https://infection.github.io/guide/usage.html#Running-with-phpdbg">phpdbg</a> or <a href="https://github.com/krakjoe/pcov/blob/develop/INSTALL.md">pcov</a>. <em>Tip: make sure to check out <a href="https://learnxdebug.com/">LearnXDebug.com</a> when you're setting up Xdebug in a Laravel oriented development environment.</em></p>
+<p>In the steps below, I assume having xDebug installed.</p>
+<p>While you have <a href="https://infection.github.io/guide/installation.html">multiple options</a> to install Infection, I would recommend installing it as a <code>dev</code> dependency using composer within your project.</p>
+<h4>Step 1. Install Infection PHP</h4>
+<div class="highlight"><pre><span></span><code>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>infection/infection
+</code></pre></div>
+
+<h4>Step 2. Run Infection</h4>
+<div class="highlight"><pre><span></span><code>vendor/bin/infection
+</code></pre></div>
+
+<p>On the first run, Infection will ask for input:</p>
+<blockquote>
+<ul>
+<li>Directories to include:<ul>
+<li>For <strong>Laravel projects</strong>, this means your <code>app</code> directory.</li>
+<li>For <strong>PHP packages</strong> this means the <code>src</code> directory.</li>
+</ul>
+</li>
+<li>Excluding directories from source directories:<ul>
+<li>Leave this blank. Unless you have PHP code living in the source directory that Infection shouldn't mutate.</li>
+</ul>
+</li>
+<li>Where to store the text log file:<ul>
+<li>I would recommend saving the mutations to (<em>e.g.</em>) <code>infection.log</code>. All escaped mutants are preserved here for later review.</li>
+<li>Alternatively, you may use the <code>--show-mutations</code> option to log the mutations to the terminal output.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>You'll now find <code>infection.json.dist</code> in the root of your project reflecting your input:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;src&quot;</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;logs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;infection.log&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;mutators&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;@default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>You can specify if you want to enable (or disable) a specific mutator under the "mutators" key. Make sure to check the <a href="https://infection.github.io/guide/mutators.html">complete list of available mutators</a>.</p>
+<p>Tip: allow the mutation tests to run in parallel by providing the <code>--threads</code> option and setting it greater than 1. For example, using 4 threads you'd run <code>vendor/bin/infection --threads=4</code>. Using parallel testing will greatly speed up running the mutation tests. You can find an overview of all command-line options at <a href="https://infection.github.io/guide/command-line-options.html">https://infection.github.io/guide/command-line-options.html</a>.</p>
+<h2>Code Examples</h2>
+<h3>Example 1: Calculating shipping cost</h3>
+<p>To demonstrate Mutation Testing in practice, I'll borrow the example from Jeroen's talk.</p>
+<p>Imagine having a <code>ShippingCalculator</code> service class to determine if a passed in <code>Product</code> qualifies for free shipping. For simplicity’s sake, let's say the <code>Product</code> class accepts a <code>$price</code> integer through its constructor and provides public access to a <code>$shipsForFree</code> property.</p>
+<p>The <code>ShippingCalculator</code> class determines that a <code>Product</code> receives free shipping when:
+- The price is equal to or greater than the threshold (set to an arbitrary value)
+- The product's <code>$shipsForFree</code> property is <code>true</code> (or truthy)</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">ShippingCalculator</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="no">FREE_SHIPPING_THRESHOLD</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">hasFreeShipping</span><span class="p">(</span><span class="nx">Product</span> <span class="nv">$product</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span>
+    <span class="p">{</span>        
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$product</span><span class="o">-&gt;</span><span class="na">price</span> <span class="o">&gt;=</span> <span class="nx">self</span><span class="o">::</span><span class="na">FREE_SHIPPING_THRESHOLD</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$product</span><span class="o">-&gt;</span><span class="na">shipsForFree</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4>Testing the code with PHPUnit</h4>
+<p>To make sure the <code>ShippingCalculator::hasFreeShipping()</code> method works properly, we can think of adding the following unit tests to ensure proper behavior:</p>
+<ul>
+<li>When a product's <code>$price</code> exceeds the threshold, it should ship for free</li>
+<li>When a product's <code>$price</code> does not exceed the threshold, it should not ship for free</li>
+<li>When a product's <code>$shipsforFree</code> property set to <code>true</code>, it should ship for free</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">ShippingCalculatorTest</span> <span class="k">extends</span> <span class="nx">TestCase</span>
+<span class="p">{</span>
+    <span class="sd">/** @test */</span>
+    <span class="k">function</span> <span class="nf">product_ships_for_free_when_price_is_above_treshold</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$product</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Product</span><span class="p">(</span><span class="nv">$price</span> <span class="o">=</span> <span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">FREE_SHIPPING_THRESHOLD</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">hasFreeShipping</span><span class="p">(</span><span class="nv">$product</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="sd">/** @test */</span>
+    <span class="k">function</span> <span class="nf">product_does_not_ship_for_free_when_price_is_below_treshold</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$product</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Product</span><span class="p">(</span><span class="nv">$price</span> <span class="o">=</span> <span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">FREE_SHIPPING_THRESHOLD</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertFalse</span><span class="p">(</span><span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">hasFreeShipping</span><span class="p">(</span><span class="nv">$product</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="sd">/** @test */</span>
+    <span class="k">function</span> <span class="nf">product_ships_for_free_when_ships_for_free_property_is_true</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$product</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Product</span><span class="p">(</span><span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">FREE_SHIPPING_THRESHOLD</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nv">$product</span><span class="o">-&gt;</span><span class="na">shipsForFree</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">hasFreeShipping</span><span class="p">(</span><span class="nv">$product</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>With these three tests, the code coverage report from PHPUnit (which you can generate using <code>vendor/bin/phpunit --coverage-text</code>) reveals a code coverage of 100% for both classes.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>Summary:
+<span class="w">  </span>Classes:<span class="w"> </span><span class="m">100</span>.00%<span class="w"> </span><span class="o">(</span><span class="m">2</span>/2<span class="o">)</span>
+<span class="w">  </span>Methods:<span class="w"> </span><span class="m">100</span>.00%<span class="w"> </span><span class="o">(</span><span class="m">2</span>/2<span class="o">)</span>
+<span class="w">  </span>Lines:<span class="w">   </span><span class="m">100</span>.00%<span class="w"> </span><span class="o">(</span><span class="m">7</span>/7<span class="o">)</span>
+</code></pre></div>
+
+<h4>Running Infection PHP</h4>
+<p>Now, we'll run Infection PHP using <code>vendor/bin/infection</code> and see if any mutants escape.</p>
+<div class="highlight"><pre><span></span><code>.M....<span class="w">                                               </span><span class="o">(</span><span class="m">6</span><span class="w"> </span>/<span class="w"> </span><span class="m">6</span><span class="o">)</span>
+
+<span class="m">6</span><span class="w"> </span>mutations<span class="w"> </span>were<span class="w"> </span>generated:
+<span class="w">       </span><span class="m">5</span><span class="w"> </span>mutants<span class="w"> </span>were<span class="w"> </span>killed
+<span class="w">       </span><span class="m">0</span><span class="w"> </span>mutants<span class="w"> </span>were<span class="w"> </span>not<span class="w"> </span>covered<span class="w"> </span>by<span class="w"> </span>tests
+<span class="w">       </span><span class="m">1</span><span class="w"> </span>covered<span class="w"> </span>mutants<span class="w"> </span>were<span class="w"> </span>not<span class="w"> </span>detected
+<span class="w">       </span>...
+
+Metrics:
+<span class="w">         </span>Mutation<span class="w"> </span>Score<span class="w"> </span>Indicator<span class="w"> </span><span class="o">(</span>MSI<span class="o">)</span>:<span class="w"> </span><span class="m">83</span>%
+<span class="w">         </span>Mutation<span class="w"> </span>Code<span class="w"> </span>Coverage:<span class="w"> </span><span class="m">100</span>%
+<span class="w">         </span>Covered<span class="w"> </span>Code<span class="w"> </span>MSI:<span class="w"> </span><span class="m">83</span>%
+</code></pre></div>
+
+<p>Oh no, a mutant has escaped!</p>
+<p>Furthermore, our <strong>MSI</strong> is <strong>83%</strong>, while the generated mutations covered 100% of the code. This means 5 out of 6 mutants were killed.</p>
+<p>When we check our log file, we see the <code>[M] GreaterThanOrEqualTo</code> mutant escaped:</p>
+<div class="highlight"><pre><span></span><code>Escaped<span class="w"> </span>mutants:
+<span class="o">================</span>
+<span class="m">1</span><span class="o">)</span><span class="w"> </span>../src/ShippingCalculator.php:15<span class="w">    </span><span class="o">[</span>M<span class="o">]</span><span class="w"> </span>GreaterThanOrEqualTo
+
+---<span class="w"> </span>Original
++++<span class="w"> </span>New
+@@<span class="w"> </span>@@
+-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="o">(</span><span class="nv">$product</span>-&gt;price<span class="w"> </span>&gt;<span class="o">=</span><span class="w"> </span>self::FREE_SHIPPING_THRESHOLD<span class="o">)</span><span class="w"> </span><span class="o">{</span>
++<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="o">(</span><span class="nv">$product</span>-&gt;price<span class="w"> </span>&gt;<span class="w"> </span>self::FREE_SHIPPING_THRESHOLD<span class="o">)</span><span class="w"> </span><span class="o">{</span>
+</code></pre></div>
+
+<h4>The missing test</h4>
+<p>It becomes apparent that we are <strong>missing a crucial test</strong>: we did not assert what happens when the <code>$price</code> is <strong>equal</strong> to the free shipping threshold.</p>
+<p>Infection PHP expected at least one of our tests to fail when mutating the conditional from a <code>great-than-or-equals</code> to a <code>greater-than</code> comparison. Since our test suite didn't fail, this mutation got away unnoticed.</p>
+<p>Let's fix that by adding in the "forgotten" boundary test:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @test */</span>
+<span class="k">function</span> <span class="nf">product_ships_for_free_when_price_equals_threshold</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="nv">$product</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Product</span><span class="p">(</span><span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">FREE_SHIPPING_THRESHOLD</span><span class="p">);</span>
+
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nx">ShippingCalculator</span><span class="o">::</span><span class="na">hasFreeShipping</span><span class="p">(</span><span class="nv">$product</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>When we run Infection again, we get an MSI of 100%. No escaped mutants this time!</p>
+<h3>Example 2: Redirection</h3>
+<p>After using mutation testing in my Laravel projects, I learned that mutation testing drives out tests I would otherwise not have written.</p>
+<p>Take a look at the following example, where users are redirected to a specific page together with a 'date' parameter from the <code>store()</code> controller action.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">AppointmentController</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">store</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// controller logic</span>
+
+        <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;appointments.index&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span> <span class="o">=&gt;</span> <span class="nv">$date</span><span class="p">]));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>In my test for this controller action, I initially did not check that the <code>store()</code> method redirects the user to the appropriate page for the submitted date. Therefore, when running the mutation tests, the following <strong>mutant had escaped</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="m">3</span><span class="o">)</span><span class="w"> </span>.../app/Http/Controllers/AppointmentController.php:163<span class="w">    </span><span class="o">[</span>M<span class="o">]</span><span class="w"> </span>ArrayItemRemoval
+
+---<span class="w"> </span>Original
++++<span class="w"> </span>New
+@@<span class="w"> </span>@@
+-<span class="w">        </span><span class="k">return</span><span class="w"> </span>redirect<span class="o">(</span>route<span class="o">(</span><span class="s1">&#39;appointments.index&#39;</span>,<span class="w"> </span><span class="o">[</span><span class="s1">&#39;date&#39;</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="nv">$date</span><span class="o">]))</span><span class="p">;</span>
++<span class="w">        </span><span class="k">return</span><span class="w"> </span>redirect<span class="o">(</span>route<span class="o">(</span><span class="s1">&#39;appointments.index&#39;</span>,<span class="w"> </span><span class="o">[]))</span><span class="p">;</span>
+<span class="w">     </span><span class="o">}</span>
+<span class="w"> </span><span class="o">}</span>
+</code></pre></div>
+
+<p>While this <code>date</code> parameter in the redirect is <strong>crucial</strong> for users of the application to land on the appropriate page, <strong>I didn't have a test</strong> for this behavior. Until now, not having a test for the specific redirect could go unnoticed. Thanks to mutation testing, I've now discovered this gap and it has <strong>forced</strong> me to add a test covering this scenario.</p>
+<h2>Using Infection in CI</h2>
+<p>It is possible to run mutation tests in Continuous Integration (CI) against newly added code or before builds. </p>
+<p>You can set a <code>--min-msi</code> score option to force a certain percentage of mutants to be killed and gradually increase this number to improve the project's test suite. If the MSI score is lower than required, the build will fail. </p>
+<h3>Small projects</h3>
+<p>For small projects, the simplest option is to run the PHPUnit tests while saving the test coverage files in a <code>build</code> directory and then feeding those generated report files directly to Infection PHP.</p>
+<div class="highlight"><pre><span></span><code>vendor/bin/phpunit<span class="w"> </span>--coverage-xml<span class="o">=</span>build/coverage-xml<span class="w"> </span>--log-junit<span class="o">=</span>build/phpunit.junit.xml
+vendor/bin/infection<span class="w"> </span>--threads<span class="o">=</span><span class="m">2</span><span class="w"> </span>--coverage<span class="o">=</span>build<span class="w"> </span>--min-msi<span class="o">=</span><span class="m">70</span>
+</code></pre></div>
+
+<h3>GitHub Actions</h3>
+<p>Although Infection easily integrates with any CI setup, I like to highlight the newly added integration with GitHub Actions (in version 0.20). It is now possible to log escaped mutants in committed code directly within a PR!</p>
+<p><img alt="Infection GitHub Annotations" src="images/posts/mutation-testing/github-logger.png"></p>
+<p>To make use of this feature, you can add the following action to your GitHub Action workflow:</p>
+<div class="highlight"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">Run</span><span class="w"> </span><span class="nv">Infection</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">added</span><span class="w"> </span><span class="ss">(</span><span class="nv">A</span><span class="ss">)</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">modified</span><span class="w"> </span><span class="ss">(</span><span class="nv">M</span><span class="ss">)</span><span class="w"> </span><span class="nv">files</span>
+<span class="w">  </span><span class="nv">run</span>:<span class="w"> </span><span class="o">|</span>
+<span class="w">    </span><span class="nv">git</span><span class="w"> </span><span class="nv">fetch</span><span class="w"> </span><span class="o">--</span><span class="nv">depth</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="nv">origin</span><span class="w"> </span>$<span class="nv">GITHUB_BASE_REF</span>
+<span class="w">    </span><span class="nv">php</span><span class="w"> </span><span class="nv">vendor</span><span class="o">/</span><span class="nv">bin</span><span class="o">/</span><span class="nv">infection</span><span class="w"> </span><span class="o">--</span><span class="nv">threads</span><span class="o">=</span><span class="mi">2</span><span class="w"> </span><span class="o">--</span><span class="nv">git</span><span class="o">-</span><span class="nv">diff</span><span class="o">-</span><span class="nv">base</span><span class="o">=</span><span class="nv">origin</span><span class="o">/</span>$<span class="nv">GITHUB_BASE_REF</span><span class="w"> </span><span class="o">--</span><span class="nv">git</span><span class="o">-</span><span class="nv">diff</span><span class="o">-</span><span class="nv">filter</span><span class="o">=</span><span class="nv">AM</span><span class="w"> </span><span class="o">--</span><span class="nv">logger</span><span class="o">-</span><span class="nv">github</span>
+</code></pre></div>
+
+<p>Check out <a href="https://infection.github.io/2020/11/01/whats-new-in-0.20.0/#Github-Annotations-logger-%F0%9F%9A%80">the release documentation</a> for more details.</p>
+<h3>Larger projects</h3>
+<p>If you want to use Mutation Testing in CI for larger projects, make sure to check out <a href="https://alejandrocelaya.blog/2018/02/17/mutation-testing-with-infection-in-big-php-projects/">this article</a> by Alejandro Celaya. </p>
+<p>In his blog post, he advises using <code>phpdbg</code> to run Infection, leading to an apparent gain in performance.</p>
+<h2>Conclusion</h2>
+<p>I hope this blog post provides some insight and direction to get started with Mutation Testing. In summary, Mutation Testing creates mutants from your source code that run against your existing test suite. If none of these tests fail, it is a sign that this piece of the source code (<em>the mutant</em>) is weakly tested. This methodology helps to identify gaps in your current test suite and dead or unnecessary code (or <em>e.g.</em> unnecessary broad method visibility).</p>
+<p>Although this blog post merely covers some examples, there is a lot more to explore in Mutation Testing: make sure to check out <a href="https://infection.github.io/guide/mutators.html">all available mutators</a> and the <a href="https://infection.github.io/guide/how-to.html">how-to guide</a>.</p>
+<h3>Drawbacks</h3>
+<p>While Mutation Testing has many advantages, think of the following possible drawbacks and things to be aware of.</p>
+<blockquote>
+<ul>
+<li>Running mutation tests is relatively slow. You can speed up the process by allowing testing in parallel (set <code>--threads</code> &gt; 1).</li>
+<li>Not all mutants have to be killed. Trying to kill all mutants might lead to <strong>tight coupling</strong> between your code and your tests. Or lead to code that is <em>too strict</em> and no longer <strong>flexible</strong>.</li>
+</ul>
+</blockquote>
+<h3>More resources</h3>
+<p>If you want to learn more about Mutation Testing, make sure to check out these great resources on Mutation Testing (using Infection):</p>
+<p>Articles:</p>
+<blockquote>
+<ul>
+<li><a href="https://medium.com/@maks_rafalko/infection-mutation-testing-framework-c9ccf02eefd1">Infection: Mutation Testing Framework - Maks Rafalko (Infection PHP creator)</a></li>
+<li><a href="https://www.moxio.com/blog/39/mutation-testing-in-php">Mutation testing in PHP - Moxio (    Arnout Boks)</a></li>
+<li><a href="https://matthewdaly.co.uk/blog/2018/09/13/mutation-testing-with-infection/">Mutation Testing With Infection - Matthew Daly</a></li>
+<li><a href="https://alejandrocelaya.blog/2018/02/17/mutation-testing-with-infection-in-big-php-projects/">Mutation testing with Infection in big PHP projects - Alejandro Celaya</a></li>
+</ul>
+</blockquote>
+<p>Talks:</p>
+<blockquote>
+<ul>
+<li><a href="https://talksatconfs.com/talks/ddfa9479-2ceb-4634-90e7-ca53aa26c24c/kill-all-mutants-intro-to-mutation-testing">Kill All Mutants! - Dave Aronson</a></li>
+<li><a href="https://skillsmatter.com/skillscasts/11237-better-code-by-making-bugs-with-mutation-testing">Better Code By Making Bugs with Mutation Testing - Theo Fidry</a></li>
+</ul>
+</blockquote>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>

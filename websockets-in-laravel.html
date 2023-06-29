@@ -1,0 +1,525 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - WebSockets in Laravel</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="WebSockets in Laravel">
+    <meta property="og:url" content="websockets-in-laravel.html">
+    <meta property="og:description" content="The Laravel WebSockets package provides an alternative to Pusher for broadcasting over WebSocket technology. This article covers both implementations using a demo application.">
+    <meta property="article:published_time" content="Monday, July 01, 2019">
+    <meta name="twitter:title" content="WebSockets in Laravel">
+    <meta name="twitter:description" content="The Laravel WebSockets package provides an alternative to Pusher for broadcasting over WebSocket technology. This article covers both implementations using a demo application.">
+    <meta name="description" content="The Laravel WebSockets package provides an alternative to Pusher for broadcasting over WebSocket technology. This article covers both implementations using a demo application.">
+    <meta name="twitter:image" content="posts/websockets-in-laravel/cover.png">
+    <meta property="og:image" content="posts/websockets-in-laravel/cover.png">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/websockets-in-laravel.html">
+	<meta property="og:title" content="WebSockets in Laravel">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/websockets-in-laravel/cover.png">
+	<meta property="article:published_time" content="2019-07-01 00:00:00+02:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>WebSockets in Laravel</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/websockets-in-laravel.html">WebSockets in Laravel</a>
+            </h2>
+			<ul>
+				<li>Published: 01-07-2019</li>
+			</ul>
+		</header>
+
+		<h2>Getting started with WebSockets</h2>
+<p>Recently, <a href="https://freek.dev">Freek Van der Herten</a> (from <a href="https://spatie.be">Spatie</a>) and <a href="https://marcelpociot.de/">Marcel Pociot</a> (from <a href="https://beyondco.de/">BeyondCode</a>) have published a package called <a href="https://docs.beyondco.de/laravel-websockets/">Laravel WebSockets</a> which provides an alternative to services like <a href="https://www.pusher.com">Pusher</a>.</p>
+<p>In this post, I want to explain how to get started with <strong>real-time broadcasting</strong> in Laravel using WebSockets. The stepwise guide will explain how to set up the essentials for broadcasting. The first part covers using <strong>Pusher</strong>, and the second part dives into switching to the <strong>Laravel WebSockets</strong> package.</p>
+<p><img alt="Laravel WebSockets" src="images/posts/websockets-in-laravel/laravel-websockets.png"></p>
+<h2>When to use WebSockets?</h2>
+<p>WebSockets is a relatively young TCP protocol, finalized in 2011, enabling two-way communication between the server and a user's browser. They are nowadays commonly used in applications that want to communicate changes in real-time. Chatrooms are probably the most well-known example, along with online multiplayer games (quizzes), social media streams, and sports tickers.</p>
+<h2>Our demo application</h2>
+<p>Let's assume our application needs to do some heavy lifting (which we will mimic using PHP's <code>sleep()</code> function). For example, imagine that a user can upload a video, which needs to undergo a time-intensive post-processing task. Since we don't want to keep our users waiting, we'll put a <strong>job</strong> on the <strong>queue</strong> to execute that work behind the scenes. In the meantime, our user will see a <em>"waiting to be processed"</em> status until the job is processed. Within the job, we'll emit an <strong>event</strong> upon completion that should be broadcasted to the <strong>specific</strong> user only. In turn, that should update that user's status without requiring a "hard refresh" of the web page.</p>
+<h2>Common prerequisites</h2>
+<p>Both implementations, <strong>Pusher</strong> as well as <strong>Laravel WebSockets</strong>, require the following prerequisites:</p>
+<h3>Laravel Echo</h3>
+<p>Echo is a javascript library that makes it a breeze to listen to broadcasted events from our front end. You can install Laravel Echo via npm:</p>
+<div class="highlight"><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>--save<span class="w"> </span>laravel-echo<span class="w"> </span>pusher-js
+</code></pre></div>
+
+<p>After installation, uncomment the Laravel Echo specific code in your <code>resources/js/bootstrap.js</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">Echo</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;laravel-echo&#39;</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="nb">window</span><span class="p">.</span><span class="nx">Pusher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;pusher-js&#39;</span><span class="p">);</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">Echo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Echo</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">broadcaster</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;pusher&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MIX_PUSHER_APP_KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">cluster</span><span class="o">:</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MIX_PUSHER_APP_CLUSTER</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">encrypted</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<h3>Redis</h3>
+<p>In this example, we'll use Redis as our <strong>queue</strong> driver, which can be installed using composer:</p>
+<div class="highlight"><pre><span></span><code>composer<span class="w"> </span>require<span class="w"> </span>predis/predis
+</code></pre></div>
+
+<p>Now, in the <code>.env</code> file set <code>QUEUE_CONNECTION=redis</code></p>
+<hr>
+<h2>Tips and tricks before starting</h2>
+<p>If you are new to broadcasting, some things might be a bit tricky at first. Therefore I wanted to dedicate a small section to hopefully clear things up.</p>
+<h3>Uncomment the <code>BroadcastingServiceProvider</code></h3>
+<p>I've been tricked more than once in forgetting to uncomment the following line in the <code>providers</code> array of <code>config/app.php</code>. Make this the first thing you do! (if you're like me).</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+  <span class="cm">/*</span>
+<span class="cm">  * Application Service Providers</span>
+<span class="cm">  */</span>
+  <span class="nx">App\Providers\AppServiceProvider</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+  <span class="nx">App\Providers\AuthServiceProvider</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+  <span class="nx">App\Providers\BroadcastServiceProvider</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+  <span class="nx">App\Providers\EventServiceProvider</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+  <span class="nx">App\Providers\TelescopeServiceProvider</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+  <span class="nx">App\Providers\RouteServiceProvider</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+<span class="p">],</span>
+</code></pre></div>
+
+<h3>Always recompile your assets</h3>
+<p>When changing the <code>PUSHER_*</code> credentials in the <code>.env</code> environment file, always recompile your assets using <code>npm run dev</code> (or watch / prod). Recompilation is necessary, as Laravel Echo fetches the variables at compilation from your environment variables, as you can see in the instantiation of Echo in <code>resources/js/bootstrap.js</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">({</span>
+<span class="w">  </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MIX_PUSHER_APP_KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">cluster</span><span class="o">:</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MIX_PUSHER_APP_CLUSTER</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<hr>
+<h2>Pusher</h2>
+<p>The easiest way to get started is using the Pusher implementation. We'll first require the Pusher specific package using composer.</p>
+<div class="highlight"><pre><span></span><code>composer<span class="w"> </span>require<span class="w"> </span>pusher/pusher-php-server<span class="w"> </span><span class="s2">&quot;~3.0&quot;</span>
+</code></pre></div>
+
+<p>Now, we need to get our credentials from <a href="https://www.pusher.com/">Pusher.com</a>. If you don't have an account yet, you first need to register. They offer a free account, which should suffice for small to medium applications. On their website, create a new app and select the cluster that's closest to you. Copy the credentials on the "App Keys" page to the <code>.env</code> file:</p>
+<p>.env:</p>
+<div class="highlight"><pre><span></span><code>PUSHER_APP_ID=(app_id)
+PUSHER_APP_KEY=(app_key)
+PUSHER_APP_SECRET=(app_secret)
+PUSHER_APP_CLUSTER=(cluster)
+</code></pre></div>
+
+<p>That's all there is to it. Next up: building the demo application.</p>
+<hr>
+<h2>Building our demo application</h2>
+<p>In this section, let's walk through a minimum setup to get our basic demo application working.</p>
+<p>First, we'll scaffold the default Laravel authentication and a <code>Video</code> model with a migration and a controller.</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>make:auth
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>make:model<span class="w"> </span>Video<span class="w"> </span>-mc
+</code></pre></div>
+
+<p>Add a user to the Videos table migration:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">up</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">Schema</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">&#39;videos&#39;</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nx">Blueprint</span> <span class="nv">$table</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">bigIncrements</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">bigInteger</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">);</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">timestamps</span><span class="p">();</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>And finally, migrate:</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>migrate
+</code></pre></div>
+
+<p>We have a <em>post</em> route to store a new video and a <em>show</em> route, which will let the user know his/her uploaded video's current status.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="nx">Auth</span><span class="o">::</span><span class="na">routes</span><span class="p">();</span>
+<span class="nx">Route</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;/videos/{video}&#39;</span><span class="p">,</span> <span class="s1">&#39;VideoController@show&#39;</span><span class="p">);</span>
+<span class="nx">Route</span><span class="o">::</span><span class="na">post</span><span class="p">(</span><span class="s1">&#39;/videos&#39;</span><span class="p">,</span> <span class="s1">&#39;VideoController@store&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>In the <code>VideoController</code>, we'll add the corresponding methods.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">use</span> <span class="nx">App\Video</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">App\Jobs\ProcessVideo</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Illuminate\Http\Request</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">VideoController</span> <span class="k">extends</span> <span class="nx">Controller</span> <span class="p">{</span>
+   <span class="k">public</span> <span class="k">function</span> <span class="nf">store</span><span class="p">(</span><span class="nx">Request</span> <span class="nv">$request</span><span class="p">)</span>
+   <span class="p">{</span>
+       <span class="c1">// here we would the uploaded video from $request</span>
+       <span class="c1">// and store it along with its path﻿﻿</span>
+       <span class="nv">$video</span> <span class="o">=</span> <span class="nx">Video</span><span class="o">::</span><span class="na">create</span><span class="p">([]);</span>
+
+       <span class="c1">// Then, pass the heavy lifting to our job</span>
+       <span class="nx">ProcessVideo</span><span class="o">::</span><span class="na">dispatch</span><span class="p">(</span><span class="nv">$video</span><span class="p">);</span>
+
+       <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s1">&#39;/videos/&#39;</span> <span class="o">.</span> <span class="nv">$video</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="k">public</span> <span class="k">function</span> <span class="nf">show</span><span class="p">(</span><span class="nx">Video</span> <span class="nv">$video</span><span class="p">)</span>
+   <span class="p">{</span>
+       <span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;videos.show&#39;</span><span class="p">,</span> <span class="nb">compact</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">));</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>To reach the <strong>post</strong> route, we add a form to <code>welcome.blade.php</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;/videos&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+  @csrf
+  <span class="cm">&lt;!-- some upload and other form fields --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span>Upload some video<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>After posting this form, the user will hit the <code>store()</code> method of our controller, dispatching a <code>ProcessVideo</code> job before the user gets redirected to the video's show page. We haven't created any of these yet, so let's start by scaffolding the <code>ProcessVideo</code> job:</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>make:job<span class="w"> </span>ProcessVideo
+</code></pre></div>
+
+<p>Since we want to reference the video that needs processing, accept the <code>$video</code> in the constructor. In the <code>handle()</code> method, the application will sleep for 10 seconds and then emit an event called <strong>VideoWasProcessed</strong>. Don't forget to import the <code>Video</code> and <code>VideoWasProcessed</code> classes.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+<span class="c1">// app/Jobs/ProcessVideo.php:</span>
+
+<span class="k">use</span> <span class="nx">App\Video</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">App\Events\VideoWasProcessed</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ProcessVideo</span> <span class="k">implements</span> <span class="nx">ShouldQueue</span> <span class="p">{</span>
+    <span class="k">use</span> <span class="nx">Dispatchable</span><span class="p">,</span> <span class="nx">InteractsWithQueue</span><span class="p">,</span> <span class="nx">Queueable</span><span class="p">,</span> <span class="nx">SerializesModels</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nv">$video</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nx">Video</span> <span class="nv">$video</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">video</span> <span class="o">=</span> <span class="nv">$video</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">handle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nb">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+
+        <span class="nx">event</span><span class="p">(</span><span class="k">new</span> <span class="nx">VideoWasProcessed</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">video</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Since the job implements the <code>ShouldQueue</code> interface, Laravel will always try to queue this job. Then, our Laravel queue workers (using the Redis connection) in the background will make sure the job is executed. When completed (in our case, after 10 seconds), the <code>videoWasProcessed</code> event will be fired.</p>
+<p>We haven't created this event yet, so run:</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>make:event<span class="w"> </span>VideoWasProcessed
+</code></pre></div>
+
+<p>In addition to accepting the <code>$video</code> in the constructor, we also want to implement the <code>ShouldBroadcast</code> protocol. Our application will not broadcast the event unless you implement <code>ShouldBroadcast</code>. Also, don't forget to import the Video class.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+<span class="c1">// app/Events/VideoWasProcessed.php:</span>
+
+<span class="k">use</span> <span class="nx">App\Video</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">VideoWasProcessed</span> <span class="k">implements</span> <span class="nx">ShouldBroadcast</span> <span class="p">{</span>
+    <span class="k">use</span> <span class="nx">Dispatchable</span><span class="p">,</span> <span class="nx">InteractsWithSockets</span><span class="p">,</span> <span class="nx">SerializesModels</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nv">$video</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nx">Video</span> <span class="nv">$video</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">video</span> <span class="o">=</span> <span class="nv">$video</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">broadcastOn</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nx">PrivateChannel</span><span class="p">(</span>
+          <span class="s2">&quot;videos.</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">video</span><span class="o">-&gt;</span><span class="na">id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The <code>broadcastOn()</code> method specifies which channel to broadcast on. 
+As we only want to inform the owner of the uploaded video on the processing status, we broadcast on a <code>PrivateChannel</code>. Who has access to this channel can be configured in the <code>routes/channels.php</code> file. If the closure (as defined below) returns <code>true</code>, the given user has access. If the closure returns <code>false</code>, authorization fails and the user can't access the channel. In our example, we'll add a constraint that only allows the video owner to see updates.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+<span class="c1">// routes/channels.php:</span>
+
+<span class="nx">Broadcast</span><span class="o">::</span><span class="na">channel</span><span class="p">(</span><span class="s1">&#39;videos.{id}&#39;</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$user</span><span class="p">,</span> <span class="nv">$id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">===</span> <span class="nx">Video</span><span class="o">::</span><span class="na">find</span><span class="p">(</span><span class="nv">$id</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">user_id</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<h3>Reflecting updates on the front end</h3>
+<p>The magic revolves around the show page of our video. For the javascript side of things, we'll leverage VueJS.</p>
+<p>resources/views/videos/show.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Video&#39;s page<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- always include your CSRF token --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;csrf-token&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;{{ csrf_token() }}&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;app&quot;</span><span class="p">&gt;</span>
+      <span class="cm">&lt;!-- our Vue component --&gt;</span>﻿
+      <span class="p">&lt;</span><span class="nt">video-progress</span> <span class="na">:video</span><span class="o">=</span><span class="s">&quot;{{ $video }}&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- include our compiled javascript --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;{{ asset(&#39;js/app.js&#39;) }}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>The <code>VideoProgress.vue</code> component consists of a data variable <code>processing</code> that holds information on the video's processing status. In the <code>created()</code> lifecycle hook of Vue, we defined a private listener that passes through the video's <code>id</code> and listens for a <code>VideoWasProcessed</code> event. When it gets that event, the closure is executed, and in this case, the <code>processing</code> data variable will be set to false, reactively updating the <code>span</code> in our template.</p>
+<p>resources/js/components/VideoProgress.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">    </span><span class="nt">&lt;div&gt;</span>
+<span class="w">        </span>Your<span class="w"> </span>video<span class="w"> </span>with<span class="w"> </span>ID<span class="w"> </span>{{<span class="w"> </span>video.id<span class="w"> </span>}}<span class="w"> </span>is<span class="w"> </span>currently:
+<span class="w">        </span><span class="nt">&lt;span</span> <span class="na">style=</span><span class="s">&quot;color: red;&quot;</span> <span class="na">v-if=</span><span class="s">&quot;processing&quot;</span><span class="nt">&gt;</span>
+<span class="w">           </span>﻿Processing...
+<span class="w">        </span><span class="nt">&lt;/span&gt;</span>
+<span class="w">        </span><span class="nt">&lt;span</span> <span class="na">style=</span><span class="s">&quot;color:green&quot;</span> <span class="err">v-else</span><span class="nt">&gt;</span>
+<span class="w">           </span>Finished!
+<span class="w">        </span><span class="nt">&lt;/span&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+<span class="w">    </span>export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">        </span>props:<span class="w"> </span>[&#39;video&#39;],
+
+<span class="w">        </span>data()<span class="w"> </span>{
+<span class="w">            </span>return<span class="w"> </span>{
+<span class="w">                </span>processing:<span class="w"> </span>true,
+<span class="w">            </span>}
+<span class="w">        </span>},
+
+<span class="w">        </span>created()<span class="w"> </span>{
+<span class="w">            </span>window.Echo.private(`videos.${this.video.id}`)
+<span class="w">                </span>.listen(&quot;VideoWasProcessed&quot;,<span class="w"> </span>(e)<span class="w"> </span>=&gt;<span class="w"> </span>{
+<span class="w">                    </span>this.processing<span class="w"> </span>=<span class="w"> </span>false;
+<span class="w">            </span>});
+<span class="w">        </span>},
+<span class="w">    </span>}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<p>Lastly, we need to register our Vue component:</p>
+<p>resources/js/app.js:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;video-progress&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./components/VideoProgress.vue&#39;</span><span class="p">).</span><span class="k">default</span><span class="p">);</span>
+</code></pre></div>
+
+<p>After recompilation of all assets using <code>npm run dev</code> (or watch / prod), start a queue worker (<code>php artisan queue:work</code>) and visit the demo app site. In the welcome view, click the submit button, and (if all went well) you should see the status updating from 'running' to 'finished' automatically after the job was processed.</p>
+<hr>
+<h2>Switching to Laravel WebSockets</h2>
+<p>The Laravel WebSockets package makes it easy to smoothly transition from using Pusher to using your own WebSockets server.</p>
+<h3>Following the instructions in the documentation:</h3>
+<ul>
+<li>We first need to require the package via composer:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>composer<span class="w"> </span>require<span class="w"> </span>beyondcode/laravel-websockets
+</code></pre></div>
+
+<ul>
+<li>Then, publish the migrations</li>
+</ul>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>vendor:publish<span class="w"> </span>--provider<span class="o">=</span><span class="s2">&quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&quot;</span><span class="w"> </span>--tag<span class="o">=</span><span class="s2">&quot;migrations&quot;</span>
+</code></pre></div>
+
+<ul>
+<li>Run the migrations:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>migrate
+</code></pre></div>
+
+<ul>
+<li>Publish the configuration file:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>vendor:publish<span class="w"> </span>--provider<span class="o">=</span><span class="s2">&quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&quot;</span><span class="w"> </span>--tag<span class="o">=</span><span class="s2">&quot;config&quot;</span>
+</code></pre></div>
+
+<h3>Configuration</h3>
+<p>The package will use the <code>pusher</code> driver, but we don't <em>actually</em> want to use Pusher. Therefore we add our own <code>host</code> and <code>port</code> configuration to the 'pusher' section in <code>config/broadcasting.php</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="c1">// config/broadcasting.php:</span>
+
+<span class="s1">&#39;pusher&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+    <span class="s1">&#39;driver&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;pusher&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;key&#39;</span> <span class="o">=&gt;</span> <span class="nx">env</span><span class="p">(</span><span class="s1">&#39;PUSHER_APP_KEY&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;secret&#39;</span> <span class="o">=&gt;</span> <span class="nx">env</span><span class="p">(</span><span class="s1">&#39;PUSHER_APP_SECRET&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;app_id&#39;</span> <span class="o">=&gt;</span> <span class="nx">env</span><span class="p">(</span><span class="s1">&#39;PUSHER_APP_ID&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;options&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+        <span class="s1">&#39;cluster&#39;</span> <span class="o">=&gt;</span> <span class="nx">env</span><span class="p">(</span><span class="s1">&#39;PUSHER_APP_CLUSTER&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;encrypted&#39;</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+        <span class="s1">&#39;host&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;port&#39;</span> <span class="o">=&gt;</span> <span class="mi">6001</span><span class="p">,</span>
+        <span class="s1">&#39;scheme&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;http&#39;</span>
+    <span class="p">],</span>
+<span class="p">],</span>
+</code></pre></div>
+
+<p>In <code>bootstrap.js</code>, we need to tell Laravel Echo to use the alternative host and port (<code>wsHost</code>, <code>wsPort</code>):</p>
+<p>resources/js/bootstrap.js:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">Echo</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;laravel-echo&#39;</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">Pusher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;pusher-js&#39;</span><span class="p">);</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">Echo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Echo</span><span class="p">({</span>
+<span class="w">   </span><span class="nx">broadcaster</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;pusher&#39;</span><span class="p">,</span>
+<span class="w">   </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MIX_PUSHER_APP_KEY</span><span class="p">,</span>
+<span class="w">   </span><span class="nx">wsHost</span><span class="o">:</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hostname</span><span class="p">,</span>
+<span class="w">   </span><span class="nx">wsPort</span><span class="o">:</span><span class="w"> </span><span class="mf">6001</span><span class="p">,</span>
+<span class="w">   </span><span class="nx">disableStats</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<p>Although we are not using Pusher, we still need to supply <em>some</em> Pusher configuration in our <code>.env</code> environment file:</p>
+<p><code>.env</code>:</p>
+<div class="highlight"><pre><span></span><code>  PUSHER_APP_ID=testapp
+  PUSHER_APP_KEY=websocketkey
+  PUSHER_APP_SECRET=somethingsecret
+</code></pre></div>
+
+<h3>Compiling assets</h3>
+<p>We need to recompile <code>bootstrap.js</code>, as discussed in the Tips and Tricks section, by running <code>npm run dev</code> (or watch / prod).</p>
+<h3>Starting our WebSockets server</h3>
+<p>Finally, boot up the WebSockets server and start a queue worker (in a separate terminal window):</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>queue:work
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>websockets:serve
+</code></pre></div>
+
+<p>Follow the <a href="https://docs.beyondco.de/laravel-websockets/1.0/basic-usage/starting.html#keeping-the-socket-server-running-with-supervisord">documentation</a> to learn which other options are available to you.</p>
+<p>Now, you should see that our demo application still works but now handling the WebSockets locally.</p>
+<h3>Running the WebSockets server in the background</h3>
+<p>Like queue workers, we want to run the WebSockets server as a separate process. The solution is the same as for our queue workers: let <strong>supervisord</strong> take care of it. To keep this post focused, please review the following articles:</p>
+<ul>
+<li><a href="https://laravel.com/docs/5.8/queues#supervisor-configuration">Configure supervisord for Laravel's queues</a></li>
+<li><a href="https://docs.beyondco.de/laravel-websockets/1.0/basic-usage/starting.html#keeping-the-socket-server-running-with-supervisord">Configure supervisord for the WebSockets server</a></li>
+</ul>
+<h3>Dashboard</h3>
+<p>The Laravel WebSockets package even comes with a dashboard, comparable to Pusher's <em>Debug Console</em>. The dashboard's lives by default on the <code>/laravel-websockets</code> path from your demo application's root and is automagically available. Follow the <a href="https://docs.beyondco.de/laravel-websockets/1.0/debugging/dashboard.html#accessing-the-dashboard">documentation</a> to learn more about the dashboard.</p>
+<p><img alt="The Laravel WebSockets dashboard" src="images/posts/websockets-in-laravel/websockets-dashboard.jpeg"></p>
+<h2>Conclusion</h2>
+<p>I hope that I've convinced you that it's easier than ever to get started with real-time broadcasting. This article discussed two of the many possible implementations in this post.</p>
+<p><strong>Pusher</strong> is a great option to get up and running fast and easy. They offer a free account that provides a maximum of 100 simultaneous connections, 200 000 messages a day, and unlimited channels. It's a no brainer for small applications, and I would always choose for the convenience of Pusher.</p>
+<p>However, suppose your application needs a bit more room to breathe. In that case, the <strong>Laravel WebSockets</strong> package offers a great alternative that lets you handle all WebSocket connections yourself and even comes with a dashboard! On top of that, switching over from <strong>Pusher</strong> to <strong>Laravel WebSockets</strong> is a breeze.</p>
+<p>Happy broadcasting!</p>
+<hr>
+<h2>Update(s)</h2>
+<ul>
+<li>As <em>"human_brain_whore"</em> suggested on <a href="https://www.reddit.com/r/laravel/comments/c89bm7/broadcasting_in_laravel_using_the_recently/esl4yho/?utm_source=share&amp;utm_medium=web2x">Reddit</a>, I've added links to the appropriate documentation pages for the configuration of <strong>supervisord</strong> to take care of automatically (re)starting <strong>queue workers</strong> and the <strong>WebSockets server</strong>. </li>
+<li><a href="https://releasecandidate.dev/posts/2020/common-issues-with-beyondcode-laravel-websockets/">Common Issues using Laravel WebSockets</a></li>
+</ul>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>

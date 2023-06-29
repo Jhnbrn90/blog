@@ -1,0 +1,800 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - Refactoring toward reusable Vue components</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Refactoring toward reusable Vue components">
+    <meta property="og:url" content="refactoring-toward-reusable-vue-components.html">
+    <meta property="og:description" content="Refactoring a Dragonball Z character selection Vue component into a more reusable, generic image-selector using renderless components vs provide/inject.">
+    <meta property="article:published_time" content="Friday, June 28, 2019">
+    <meta name="twitter:title" content="Refactoring toward reusable Vue components">
+    <meta name="twitter:description" content="Refactoring a Dragonball Z character selection Vue component into a more reusable, generic image-selector using renderless components vs provide/inject.">
+    <meta name="description" content="Refactoring a Dragonball Z character selection Vue component into a more reusable, generic image-selector using renderless components vs provide/inject.">
+    <meta name="twitter:image" content="posts/refactoring-to-reusable-vue-components/cover.jpeg">
+    <meta property="og:image" content="posts/refactoring-to-reusable-vue-components/cover.jpeg">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/refactoring-toward-reusable-vue-components.html">
+	<meta property="og:title" content="Refactoring toward reusable Vue components">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/refactoring-to-reusable-vue-components/cover.jpeg">
+	<meta property="article:published_time" content="2019-06-28 00:00:00+02:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>Refactoring toward reusable Vue components</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/refactoring-toward-reusable-vue-components.html">Refactoring toward reusable Vue components</a>
+            </h2>
+			<ul>
+				<li>Published: 28-06-2019</li>
+			</ul>
+		</header>
+
+		<p>In this post, I want to highlight possible refactoring strategies toward <strong>resuable</strong> Vue components: <strong>renderless components</strong> <em>vs</em> using <strong>Provide/Inject</strong>. To illustrate these strategies, I'll use a <strong><em>Dragonball Z</em></strong> character selectioncomponent made using <a href="https://vuejs.org/">VueJS</a> and <a href="https://tailwindcss.com/">Tailwind CSS</a>. For this project I've used Laravel as a backend and some things might be Laravel specific.</p>
+<p><img alt="Choosing a Dragonball Z fighter" src="images/posts/refactoring-to-reusable-vue-components/selector.gif"></p>
+<h2>Introduction</h2>
+<p>This post is divided in three sections. Each section is accompanied by a CodeSandbox demo, illustrating the approach.</p>
+<h3>1. The straightforward approach</h3>
+<p>It makes sense to focus on the simplest implementation first, and just get it to work. Then, refactor later. In this section we'll build the selector from scratch and I'll remind you of some basic principles.</p>
+<p><a href="https://codesandbox.io/s/straightforward-approach-0f77m?fontsize=14">View the straightforward approach on CodeSandbox</a></p>
+<h3>2. The Renderless approach</h3>
+<p>One way to make your components (more) reusable is taking advantage of Vue's render() function. In this section I'll show you how to take full control of the way your data is displayed (rendered) within the view.</p>
+<p><a href="https://codesandbox.io/embed/renderless-approach-70cj2?fontsize=14">View the renderless approach on CodeSandbox</a></p>
+<h3>3. The Provide/Inject approach</h3>
+<p>Although Renderless components give more flexibility than standard components, a major downside is that all code in your view gets more complicated/verbose. The <strong>Provide / Inject</strong> strategy is somewhere in the middle between the other two strategies.</p>
+<p><a href="https://codesandbox.io/embed/provide-inject-approach-d4cqd?fontsize=14">View the provide/inject approach on CodeSandbox</a></p>
+<p><strong>What we want to achieve:</strong></p>
+<ul>
+<li>Show 35 avatars of various Dragonball Z characters</li>
+<li>Make selection by clicking</li>
+<li>Undo the selection by clicking (again)</li>
+<li>Store the <em>id</em> of the selected character in hidden <code>&lt;input&gt;</code> form field</li>
+</ul>
+<p>The <strong>Character</strong> model has an <em>id</em>, <em>avatar</em> and <em>name</em> column in the database. The <em>avatar</em> column holds the relative path to the image source.</p>
+<p><em>Note: I will refer to</em> <a href="https://laravel.com/docs/5.8/blade"><em>blade directives</em></a><em>, which I will not go into detail to in this post.</em></p>
+<hr>
+<h2>1. The straightforward approach</h2>
+<h3>Creating the view</h3>
+<p>Given we have access to a <code>$characters</code> variable, which holds an array of characters, like so:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="err">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="kc">na</span><span class="err">me</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Goku&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">ava</span><span class="kc">tar</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;goku.jpeg&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">a</span><span class="kc">n</span><span class="err">d</span><span class="w"> </span><span class="err">so</span><span class="w"> </span><span class="err">o</span><span class="kc">n</span><span class="err">...</span>
+<span class="w"> </span><span class="p">]</span>
+</code></pre></div>
+
+<p>We might structure our view file as follows:</p>
+<p>create.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;/fighters&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+  <span class="cm">&lt;!-- other fields --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">character-selection</span>
+      <span class="na">:characters</span><span class="o">=</span><span class="s">&quot;{{ $characters }}&quot;</span>
+      <span class="na">previous-character</span><span class="o">=</span><span class="s">&quot;{{ old(&#39;character_id&#39;) }}&quot;</span>
+  <span class="p">/&gt;</span>
+  <span class="cm">&lt;!-- submit button --&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>The <code>:characters</code> and <code>previous-character</code> props we're sending through will be available in our component. We leverage Laravel's <code>old()</code> helper to pass the previous selection to the component (on failed submission of the form) to make sure we remember the selected character.</p>
+<h3>Creating the Vue component</h3>
+<p>After you've created the <code>CharacterSelection.vue</code> file, register the component globally within <code>resources/js/app.js</code>.</p>
+<p><em>I won't mention this step whenever creating new components in the rest of this post, but please keep in mind that all Vue components mentioned are registered globally.</em></p>
+<p>resources/js/app.js:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span>
+<span class="w">    </span><span class="s1">&#39;character-selection&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./components/CharacterSelection.vue&#39;</span><span class="p">).</span><span class="k">default</span>
+<span class="p">);</span>
+</code></pre></div>
+
+<h3>Accepting the props</h3>
+<p>In the <code>CharacterSelection</code> component, we'll accept the <code>*previous-character*</code> and <code>*characters*</code> props in the <code>&lt;script&gt;</code> section.</p>
+<p>CharacterSelection.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">    </span>props:<span class="w"> </span>[&#39;characters&#39;,<span class="w"> </span>&#39;previous-character&#39;],
+}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<h3>Iterating over all characters</h3>
+<p>Furthermore, we want to iterate over all characters and show an image in the <code>&lt;template&gt;</code> section of our component. From the <code>&lt;template&gt;</code> we can only return one root element and therefore have to wrap everything in a parent element, <em>e.g.</em> a <code>&lt;div&gt;</code>. When iterating over items, due to its reactivity, Vue needs to be able to differentiate between DOM elements which is why we also pass a unique <code>:key</code> attribute.</p>
+<p>To display the avatars in a grid, we employ flexbox by adding the tailwind CSS classes 'flex' and 'flex-wrap' to wrap as necessary. The images are displayed at a predefined width and height (<code>w-16</code> and <code>h-12</code>), also using Tailwind CSS classes.</p>
+<p>CharacterSelection.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">  </span><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;flex flex-wrap&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;div</span>
+       <span class="na">v-for=</span><span class="s">&quot;character in characters&quot;</span>
+       <span class="na">:key=</span><span class="s">&quot;character.id&quot;</span>
+    <span class="nt">&gt;</span>
+<span class="w">      </span><span class="nt">&lt;img</span>
+        <span class="na">class=</span><span class="s">&quot;w-16 h-12&quot;</span>
+        <span class="na">:src=</span><span class="s">&quot;`/images/fighters/</span><span class="cp">${</span><span class="n">character</span><span class="o">.</span><span class="n">avatar</span><span class="cp">}</span><span class="s">`&quot;</span>
+        <span class="na">:title=</span><span class="s">&quot;character.name&quot;</span>
+        <span class="na">:alt=</span><span class="s">&quot;character.name&quot;</span>
+      <span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/div&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+</code></pre></div>
+
+<h3>Adding reactivity</h3>
+<p>Although we can see the avatars now, there is no reactivity. To help us achieve that, we should employ a dedicated <code>&lt;single-character&gt;</code> Vue component representing a single avatar rather than a <code>&lt;img&gt;</code>. This child component will receive the character as a prop.</p>
+<p>CharacterSelection.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">    </span><span class="nt">&lt;div</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;flex flex-wrap justify-center&quot;</span><span class="nt">&gt;</span>
+
+<span class="w">      </span><span class="nt">&lt;single-character</span>
+<span class="w">        </span><span class="na">v-for=</span><span class="s">&quot;character in characters&quot;</span>
+<span class="w">        </span><span class="na">:character=</span><span class="s">&quot;character&quot;</span>
+<span class="w">        </span><span class="na">:key=</span><span class="s">&quot;character.id&quot;</span>
+<span class="w">        </span><span class="nt">/&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+</code></pre></div>
+
+<p>In our child component, we first need to make sure to render all avatars properly. We accept the current character and show the image:</p>
+<p>SingleCharacter.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">  </span><span class="nt">&lt;div</span>
+    <span class="na">class=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+  <span class="nt">&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;img</span> <span class="na">:src=</span><span class="s">&quot;avatar&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="w">  </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+
+<span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">  </span>props:<span class="w"> </span>[&#39;character&#39;],
+
+<span class="w">  </span>computed:<span class="w"> </span>{
+<span class="w">    </span>avatar()<span class="w"> </span>{
+<span class="w">      </span>return<span class="w"> </span>`/images/fighters/${this.character.avatar}`;
+<span class="w">    </span>},
+<span class="w">  </span>},
+};
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<p>Now that the avatars are showing up, let's add some reactivity by adding a click handler (<code>@click</code>) and let the parent component know that we've made a choice by emitting an event (<code>this.$emit</code>) sending along the character's id.</p>
+<p>SingleCharacter.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">  </span><span class="nt">&lt;div</span>
+<span class="w">    </span><span class="na">class=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+<span class="w">    </span><span class="err">@</span><span class="na">click=</span><span class="s">&quot;selectCharacter&quot;</span>
+<span class="w">  </span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;img</span><span class="w"> </span><span class="na">:src=</span><span class="s">&quot;avatar&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">  </span>//<span class="w"> </span>...
+<span class="w">  </span>methods:<span class="w"> </span>{
+<span class="w">    </span>selectCharacter()<span class="w"> </span>{
+<span class="w">      </span>this.$emit(&#39;character-selected&#39;,<span class="w"> </span>this.character.id);
+<span class="w">    </span>},
+<span class="w">  </span>},
+<span class="w">  </span>//<span class="w"> </span>...
+};
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<p>To make the parent component capable of listening and acting on this event, we'll need to make some adjustments.</p>
+<h3>Listening to the 'character-selected' event</h3>
+<p>First, we need to listen for an event called <code>'character-selected'</code> by specifying an attribute on our child component: <code>@character-selected</code> which will call a method that sets the internal property <code>selectedCharacter</code> of the parent component to the selected character's id. This value is then bound using <code>v-bind</code> to the hidden input field using the <code>:value</code> attribute. If the selected id was already selected, we reset the <code>selectedCharacter</code> property (to <code>null</code>).</p>
+<p>CharacterSelection.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">  </span><span class="nt">&lt;div&gt;</span>
+<span class="w">    </span><span class="nt">&lt;div</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;flex flex-wrap justify-center&quot;</span><span class="nt">&gt;</span>
+<span class="w">      </span><span class="nt">&lt;single-character</span>
+<span class="w">        </span><span class="err">@</span><span class="na">character-selected=</span><span class="s">&quot;selectCharacter&quot;</span>
+<span class="w">        </span><span class="na">v-for=</span><span class="s">&quot;character in characters&quot;</span>
+<span class="w">        </span><span class="na">:character=</span><span class="s">&quot;character&quot;</span>
+<span class="w">        </span><span class="na">:key=</span><span class="s">&quot;character.id&quot;</span>
+<span class="w">        </span><span class="na">:selected=</span><span class="s">&quot;selectedCharacter === character.id&quot;</span>
+<span class="w">        </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/div&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;input</span>
+<span class="w">      </span><span class="na">type=</span><span class="s">&quot;hidden&quot;</span>
+<span class="w">      </span><span class="na">name=</span><span class="s">&quot;character_id&quot;</span>
+<span class="w">      </span><span class="na">:value=</span><span class="s">&quot;selectedCharacter&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">    </span>props:<span class="w"> </span>[&#39;characters&#39;,<span class="w"> </span>&#39;previous-character&#39;],
+
+<span class="w">    </span>data()<span class="w"> </span>{
+<span class="w">        </span>return<span class="w"> </span>{
+<span class="w">            </span>selectedCharacter:<span class="w"> </span>parseInt(
+<span class="w">                    </span>this.previousCharacter
+<span class="w">            </span>)
+<span class="w">        </span>}
+<span class="w">    </span>},
+
+<span class="w">    </span>methods:<span class="w"> </span>{
+<span class="w">        </span>selectCharacter(id)<span class="w"> </span>{
+<span class="w">            </span>if<span class="w"> </span>(this.selectedCharacter<span class="w"> </span>===<span class="w"> </span>id)<span class="w"> </span>{
+<span class="w">                </span>return<span class="w"> </span>(this.selectedCharacter<span class="w"> </span>=<span class="w"> </span>null);
+<span class="w">            </span>}
+
+<span class="w">            </span>this.selectedCharacter<span class="w"> </span>=<span class="w"> </span>id;
+<span class="w">        </span>},
+<span class="w">    </span>},
+}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<h3>Tell the child which character is currently selected</h3>
+<p>Lastly, our child component needs to know if it is currently selected. Therefore, we also pass the <code>:selected</code> attribute. Within the child component we can accept the value as a prop and let it determine the classes which need to be applied.</p>
+<p>SingleCharacter.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">  </span><span class="nt">&lt;div</span>
+    <span class="err">@</span><span class="na">click=</span><span class="s">&quot;selectCharacter&quot;</span>
+    <span class="na">class=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+    <span class="na">:class=</span><span class="s">&quot;classes&quot;</span>
+  <span class="nt">&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;img</span> <span class="na">:src=</span><span class="s">&quot;avatar&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="w">  </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">  </span>props:<span class="w"> </span>[&#39;character&#39;,<span class="w"> </span>&#39;selected&#39;],
+
+<span class="w">  </span>methods:<span class="w"> </span>{
+<span class="w">    </span>selectCharacter()<span class="w"> </span>{
+<span class="w">      </span>this.$emit(&#39;character-selected&#39;,<span class="w"> </span>this.character.id);
+<span class="w">    </span>},
+<span class="w">  </span>},
+
+<span class="w">  </span>computed:<span class="w"> </span>{
+<span class="w">    </span>avatar()<span class="w"> </span>{
+<span class="w">      </span>return<span class="w"> </span>`/images/fighters/${this.character.avatar}`;
+<span class="w">    </span>},
+
+<span class="w">    </span>classes()<span class="w"> </span>{
+<span class="w">      </span>return<span class="w"> </span>this.selected<span class="w"> </span>?
+<span class="w">        </span>`border-2<span class="w"> </span>border-black<span class="w"> </span>shadow-lg<span class="w"> </span>opacity-100`<span class="w"> </span>:
+<span class="w">        </span>`${this.selected<span class="w"> </span>?<span class="w"> </span>&#39;opacity-35&#39;<span class="w"> </span>:<span class="w"> </span>&#39;opacity-85&#39;}`;
+<span class="w">    </span>},
+<span class="w">  </span>},
+};
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<p>This concludes our first approach and we have a basic component which does exactly what we want. However, the current implementation is tightly bound to our specific grid of 7 x 5 and contains terminology like 'character' and 'fighters'. What if we want to use this component in a quiz about animals?</p>
+<hr>
+<h2>2. Refactoring to a renderless component</h2>
+<p>Like we concluded from the previous section, the straightforward example works but is hard to reuse. All details regarding styles, layout and image paths of the avatars are hard coded in the components. If those change, we need to create a new component. That's not what we want.</p>
+<p>Adam Wathan has a <a href="https://adamwathan.me/renderless-components-in-vuejs/">great post</a> (and <a href="https://adamwathan.me/advanced-vue-component-design/">awesome videos</a>!) that describe the goal of renderless components pretty well: <em>"Separating Presentation and Behavior".</em></p>
+<p>Ideally, we want to be able to configure (some) behaviour from our view directly as indicated in the HTML below (which will not work, yet). This way, the Vue component allows itself to be "decorated" from within the layout file. Notice that the component's name and the name of the props are more generic. Instead of 'characters', we now have an 'images' prop. Although we changed the name of the prop, we still want to pass our original source of <code>$characters</code>.</p>
+<p>create.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;/fighters&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">image-selector</span>
+      <span class="na">pre-selected</span><span class="o">=</span><span class="s">&quot;{{ old(&#39;character_id&#39;) }}&quot;</span>
+      <span class="na">:images</span><span class="o">=</span><span class="s">&quot;{{ $characters }}&quot;</span>
+      <span class="na">selected-classes</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+      <span class="na">once-selected-classes</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+  <span class="p">&gt;</span>
+
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">v-for</span><span class="o">=</span><span class="s">&quot;character in images&quot;</span> <span class="na">:key</span><span class="o">=</span><span class="s">&quot;character.id&quot;</span><span class="p">&gt;</span>
+        <span class="cm">&lt;!-- render each image here --&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">image-selector</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Submit the form<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<h3>How do get access to the <code>images</code> variable within our loop?</h3>
+<p>From here on, I assume you already understand what <a href="https://vuejs.org/v2/guide/components-slots.html">Vue's slots</a> are and how they work.</p>
+<p>Since we try to iterate over a variable <code>images</code> which we don't have access to, the listed code above will not work. Here is where <strong>scoped slots</strong> come into play.</p>
+<p>A <strong>scoped</strong> slot allows us to pass data from a parent component to a child. The child might then use that data in rendering the <strong>slot</strong> of the parent component.</p>
+<h3>Creating the renderless component</h3>
+<p>Since the templating part will be managed by the layout file and passed back via a single scoped slot, we don't need to provide a template for our component. By definition, renderless components don't have a <code>&lt;template&gt;</code> section, just a <code>&lt;script&gt;</code> section. Here we can still accept any props and declare the <code>render()</code> function, which will pass any variables ('slot props') back to the child component. For our <code>images</code> prop, that would look as follows:</p>
+<p>ImageSelector.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;script&gt;</span>
+export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">    </span>props:<span class="w"> </span>[&#39;images&#39;],
+
+<span class="w">    </span>render()<span class="w"> </span>{
+<span class="w">       </span>return<span class="w"> </span>this.$scopedSlots.default({
+<span class="w">          </span>images:<span class="w"> </span>this.images
+<span class="w">       </span>});
+<span class="w">    </span>}
+}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<h3>Using the slot props in our layout file</h3>
+<p>To loop over the images in our current layout file, we will need to extract the images variable from the slot scope. Note that the syntax has been updated in Vue 2.6.0+ from using <code>slot-scope</code> to <code>v-slot</code> (<a href="https://vuejs.org/v2/guide/components-slots.html#Scoped-Slots">more info</a>).</p>
+<p>create.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;/fighters&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">image-selector</span>
+      <span class="na">pre-selected</span><span class="o">=</span><span class="s">&quot;{{ old(&#39;character_id&#39;) }}&quot;</span>
+      <span class="na">:images</span><span class="o">=</span><span class="s">&quot;{{ $characters }}&quot;</span>
+      <span class="na">selected-classes</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+      <span class="na">once-selected-classes</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+  <span class="p">&gt;</span>
+
+   <span class="p">&lt;</span><span class="nt">template</span> <span class="na">v-slot</span><span class="o">=</span><span class="s">&quot;{ images }&quot;</span><span class="p">&gt;</span>
+       <span class="cm">&lt;!-- we need to return a single root node --&gt;</span>
+       <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;flex&quot;</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">v-for</span><span class="o">=</span><span class="s">&quot;character in images&quot;</span> <span class="na">:key</span><span class="o">=</span><span class="s">&quot;character.id&quot;</span><span class="p">&gt;</span>
+            <span class="cm">&lt;!-- render each image here --&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+       <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+   <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">image-selector</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Submit the form<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<h3>Adding reactivity</h3>
+<p>To bring the component to life, <em>i.e.</em> adding reactivity, let's add the <code>props</code>, <code>data()</code> and <code>methods()</code> from the <code>SingleCharacter.vue</code> and <code>CharacterSelection.vue</code> components (from the previous, 'straightforward' approach) and insert them above our <code>render()</code> function.</p>
+<h3>Sharing data via the <code>render()</code> function</h3>
+<p>To keep the component as generic as possible, we'll catch any events using Vue's <code>v-on</code> directive and proxy them through to the <code>imageEvents()</code> method, which registers handlers for specific actions. In our case, the click event. The props are passed through using <code>imageProps()</code>.</p>
+<p>Since we want to use <code>v-bind</code> on the input field, we'll also need to offer the selected image as a 'value' through the <code>inputProps()</code> method.</p>
+<p>ImageSelector.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">export</span><span class="w"> </span><span class="n">default</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">props</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s1">&#39;images&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">&#39;preSelected&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">&#39;selectedClasses&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">&#39;onceSelectedClasses&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">],</span>
+
+<span class="w">    </span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">selectedImage</span><span class="p">:</span><span class="w"> </span><span class="n">parseInt</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">preSelected</span><span class="p">),</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="n">methods</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">selectImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
+<span class="w">      </span><span class="p">},</span>
+
+<span class="w">      </span><span class="n">classes</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="err">?</span><span class="w"> </span>
+<span class="w">          </span><span class="n">this</span><span class="o">.</span><span class="n">selectedClasses</span><span class="w"> </span><span class="p">:</span><span class="w"> </span>
+<span class="w">          </span><span class="err">`</span><span class="o">$</span><span class="p">{</span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="w"> </span><span class="err">?</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">onceSelectedClasses</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="p">}</span><span class="err">`</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="n">render</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.$</span><span class="n">scopedSlots</span><span class="o">.</span><span class="n">default</span><span class="p">({</span>
+<span class="w">        </span><span class="n">images</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">images</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">inputProps</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="p">,</span>
+<span class="w">        </span><span class="p">},</span>
+
+<span class="w">        </span><span class="n">imageProps</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">          </span><span class="n">selected</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="p">,</span>
+<span class="w">          </span><span class="k">class</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="n">image</span><span class="p">),</span>
+<span class="w">        </span><span class="p">}),</span>
+
+<span class="w">        </span><span class="n">imageEvents</span><span class="p">:</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">          </span><span class="n">click</span><span class="p">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">this</span><span class="o">.</span><span class="n">selectImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}),</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<h3>Use variables in the view</h3>
+<p>Now, from within our blade view file we can leverage destructuring to obtain each key.</p>
+<p>create.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;/fighters&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">image-selector</span> 
+    <span class="na">:images</span><span class="o">=</span><span class="s">&quot;{{ $characters }}&quot;</span> 
+    <span class="na">pre-selected</span><span class="o">=</span><span class="s">&quot;{{ old(&#39;character_id&#39;) }}&quot;</span> 
+    <span class="na">selected-classes</span><span class="o">=</span><span class="s">&quot;border-2 border-black shadow-lg opacity-100&quot;</span>
+    <span class="na">once-selected-classes</span><span class="o">=</span><span class="s">&quot;opacity-35&quot;</span>
+  <span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">template</span> 
+      <span class="na">v-slot</span><span class="o">=</span><span class="s">&quot;{ </span>
+<span class="s">        images, </span>
+<span class="s">        imageProps, </span>
+<span class="s">        imageEvents, </span>
+<span class="s">        inputProps </span>
+<span class="s">      }&quot;</span>
+    <span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;single-root-element&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;flex flex-wrap justify-center&quot;</span><span class="p">&gt;</span>
+
+          <span class="p">&lt;</span><span class="nt">div</span>
+            <span class="na">v-for</span><span class="o">=</span><span class="s">&quot;character in images&quot;</span>
+            <span class="na">:key</span><span class="o">=</span><span class="s">&quot;character.id&quot;</span>
+            <span class="na">class</span><span class="o">=</span><span class="s">&quot;(classes for an image...)&quot;</span> 
+            <span class="na">v-on</span><span class="o">=</span><span class="s">&quot;imageEvents(character)&quot;</span>
+            <span class="na">v-bind</span><span class="o">=</span><span class="s">&quot;imageProps(character)&quot;</span>
+          <span class="p">&gt;</span>
+
+            <span class="p">&lt;</span><span class="nt">img</span>
+              <span class="na">:src</span><span class="o">=</span><span class="s">&quot;`/images/fighters/${character.avatar}`&quot;</span>
+            <span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">input</span>
+          <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span>
+          <span class="na">name</span><span class="o">=</span><span class="s">&quot;character_id&quot;</span>
+          <span class="na">v-bind</span><span class="o">=</span><span class="s">&quot;inputProps&quot;</span>
+        <span class="p">/&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">image-selector</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Submit form<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<h3>That's it. We have a reusable component!</h3>
+<p>We now have a customizable component which can be reused amongst other projects.</p>
+<p>A downside to this approach is that it generates a lot of extra code and it results in a somewhat more complex layout file. However, since we have a configurable, reusable component it is possible to generate pre-configured components which are composed by one or more renderless components.</p>
+<hr>
+<h2>3. Alternative: using Provide / Inject</h2>
+<p>Vue offers another solution, which falls somewhere in the middle between the "straightforward" and renderless approach. It gives more flexibility to configure the component in the view template, while generating a less verbose layout file.</p>
+<p>In our view, we render a <code>&lt;single-character&gt;</code> component within a <code>&lt;character-selection&gt;</code> wrapper.</p>
+<p>create.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">character-selection</span>
+  <span class="na">previous-character</span><span class="o">=</span><span class="s">&quot;{{ old(&#39;character_id&#39;) }}&quot;</span>
+<span class="p">&gt;</span>
+    @foreach ($characters as $character)
+        <span class="cm">&lt;!-- Looping over Single Character component --&gt;</span>
+        <span class="p">&lt;</span><span class="nt">single-character</span>
+          <span class="na">class</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+          <span class="na">:character</span><span class="o">=</span><span class="s">&quot;{{ $character }}&quot;</span>
+          <span class="na">imageurl</span><span class="o">=</span><span class="s">&quot;/images/fighters/{{ $character-&gt;avatar }}&quot;</span>
+          <span class="na">selected-classes</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+        <span class="p">/&gt;</span>
+    @endforeach
+<span class="p">&lt;/</span><span class="nt">character-selection</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>At this stage, all looks very familiar to our first approach, except that we're taking care of looping over <code>&lt;single-character&gt;</code> in the view instead of in the <code>&lt;character-selection&gt;</code> Vue parent component.</p>
+<p>Now, instead of emitting an event from our child component to the parent, state will be shared in a <code>characterSelectionState</code> property. This property will be provided by the parent component and injected into the child component. <strong>The child component, however, can manipulate this shared (reactive) property</strong>.</p>
+<p>Here, we <strong>provide</strong> a shared variable <code>characterSelectionState</code> using the <code>provide()</code> method:</p>
+<p>CharacterSelection.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">   </span><span class="nt">&lt;div&gt;</span>
+<span class="w">       </span><span class="nt">&lt;div</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;flex flex-wrap justify-center&quot;</span><span class="nt">&gt;</span>
+<span class="w">           </span><span class="nt">&lt;slot&gt;&lt;/slot&gt;</span>
+<span class="w">       </span><span class="nt">&lt;/div&gt;</span>
+
+<span class="w">       </span><span class="nt">&lt;input</span>
+<span class="w">          </span><span class="na">type=</span><span class="s">&quot;hidden&quot;</span>
+<span class="w">          </span><span class="na">name=</span><span class="s">&quot;character_id&quot;</span>
+<span class="w">          </span><span class="na">:value=</span><span class="s">&quot;sharedState.selectedCharacter&quot;</span>
+<span class="w">       </span><span class="nt">&gt;</span>
+
+<span class="w">   </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+<span class="w">   </span>export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">       </span>props:<span class="w"> </span>[&#39;previous-character&#39;],
+
+<span class="w">       </span>provide()<span class="w"> </span>{
+<span class="w">           </span>return<span class="w"> </span>{
+<span class="w">               </span>characterSelectionState:<span class="w"> </span>this.sharedState
+<span class="w">           </span>}
+<span class="w">       </span>},
+
+<span class="w">       </span>data()<span class="w"> </span>{
+<span class="w">           </span>return<span class="w"> </span>{
+<span class="w">               </span>sharedState:<span class="w"> </span>{
+<span class="w">                   </span>selectedCharacter:<span class="w"> </span>parseInt(
+<span class="w">                      </span>this.previousCharacter
+<span class="w">                     </span>),
+<span class="w">               </span>}
+<span class="w">           </span>}
+<span class="w">       </span>},
+<span class="w">   </span>}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<p>In SingleCharacter.vue we <strong>inject</strong> the <code>characterSelectionState</code> variable, making it available:</p>
+<p>SingleCharacter.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;template&gt;</span>
+<span class="w">   </span><span class="nt">&lt;div</span><span class="w"> </span><span class="err">@</span><span class="na">click=</span><span class="s">&quot;selectCharacter&quot;</span><span class="w"> </span><span class="na">:class=</span><span class="s">&quot;classes&quot;</span><span class="nt">&gt;</span>
+<span class="w">       </span><span class="nt">&lt;img</span><span class="w"> </span><span class="na">:src=</span><span class="s">&quot;imageurl&quot;</span><span class="nt">&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+<span class="w">   </span>export<span class="w"> </span>default<span class="w"> </span>{
+<span class="w">       </span>props:<span class="w"> </span>[&#39;character&#39;,<span class="w"> </span>&#39;imageUrl&#39;,<span class="w"> </span>&#39;selectedClasses&#39;],
+
+<span class="w">       </span>inject:<span class="w"> </span>[&#39;characterSelectionState&#39;],
+
+<span class="w">       </span>methods:<span class="w"> </span>{
+<span class="w">           </span>selectCharacter()<span class="w"> </span>{
+<span class="w">               </span>this.characterSelectionState
+<span class="w">                 </span>.selectedCharacter<span class="w"> </span>=<span class="w"> </span>this.active<span class="w"> </span>?
+<span class="w">                      </span>null<span class="w"> </span>:<span class="w"> </span>this.character.id;
+<span class="w">           </span>}
+<span class="w">       </span>},
+
+<span class="w">       </span>computed:<span class="w"> </span>{
+<span class="w">           </span>active()<span class="w"> </span>{
+<span class="w">               </span>return<span class="w"> </span>this.characterSelectionState
+<span class="w">                  </span>.selectedCharacter<span class="w"> </span>===<span class="w"> </span>this.character.id;
+<span class="w">           </span>},
+
+<span class="w">           </span>classes()<span class="w"> </span>{
+<span class="w">               </span>return<span class="w"> </span>this.active<span class="w"> </span>?
+<span class="w">                     </span>this.selectedClasses<span class="w"> </span>:<span class="w"> </span>&#39;&#39;;
+<span class="w">           </span>},
+<span class="w">       </span>}
+<span class="w">   </span>}
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+<hr>
+<h2>Conclusion</h2>
+<p>In conclusion, Vue offers a couple of nice possibilities which allows us to write reusable components:</p>
+<ul>
+<li>
+<p><strong>Renderless components</strong> give full control over how they are rendered since their behaviour is completely decoupled. However, in the end, you do create a more complex component <strong>and</strong> you end up with more verbose code in your view template.</p>
+</li>
+<li>
+<p>Vue's <strong>Provide/Inject</strong> methods can be a useful intermediate solution if you don't need a full blown completely configurable renderless component, but still want some configurational flexibility.</p>
+</li>
+</ul>
+<p>Each of the three approaches mentioned in this post have their use. Each approach has their advantages and downsides.</p>
+<hr>
+<h2>Encore</h2>
+<h3>The power of Renderless Components</h3>
+<p>Disclaimer: I would advise to always go with the <strong>simplest</strong> option for your specific needs. Don't create a renderless component when all you need is a simple component that you'll only use once.</p>
+<p><a href="https://codesandbox.io/embed/renderless-select-multiple-characters-j39lo?fontsize=14">View the multiple images approach on CodeSandbox</a></p>
+<h3>Selecting Multiple Images, using our renderless component</h3>
+<p>So far, we can use our renderless component to display any set of images in a particular way. However, what if we want to select <strong>multiple</strong> images?</p>
+<p>With a little tweak to our renderless component, we can come up with the following solution:</p>
+<p>create.blade.php:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">multiple-image-selector</span>
+ <span class="na">:images</span><span class="o">=</span><span class="s">&quot;{{ $characters }}&quot;</span>
+ <span class="na">selected-classes</span><span class="o">=</span><span class="s">&quot;border-2 border-black shadow-lg opacity-100&quot;</span>
+ <span class="na">once-selected-classes</span><span class="o">=</span><span class="s">&quot;opacity-35&quot;</span>
+<span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">template</span> <span class="na">v-slot</span><span class="o">=</span><span class="s">&quot;{</span>
+<span class="s">    ﻿images,</span>
+<span class="s">    imageProps,</span>
+<span class="s">    imageEvents,</span>
+<span class="s">    inputProps</span>
+<span class="s">   }&quot;</span>
+  <span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;single-root-element&quot;</span><span class="p">&gt;</span>
+
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;flex flex-wrap justify-center&quot;</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span>
+          <span class="na">v-for</span><span class="o">=</span><span class="s">&quot;character in images&quot;</span>
+          <span class="na">:key</span><span class="o">=</span><span class="s">&quot;character.id&quot;</span>
+          <span class="na">class</span><span class="o">=</span><span class="s">&quot;(omitted for clarity...)&quot;</span>
+          <span class="na">v-on</span><span class="o">=</span><span class="s">&quot;imageEvents(character)&quot;</span>
+          <span class="na">v-bind</span><span class="o">=</span><span class="s">&quot;imageProps(character)&quot;</span>
+         <span class="p">&gt;</span>
+
+           <span class="p">&lt;</span><span class="nt">img</span> <span class="na">:src</span><span class="o">=</span><span class="s">&quot;`/images/fighters/${character.avatar}`&quot;</span><span class="p">&gt;</span>
+
+         <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+      <span class="p">&lt;</span><span class="nt">input</span>
+        <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span>
+        <span class="na">name</span><span class="o">=</span><span class="s">&quot;character_id&quot;</span>
+        <span class="na">v-bind</span><span class="o">=</span><span class="s">&quot;inputProps&quot;</span>
+      <span class="p">&gt;</span>
+
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">multiple-image-selector</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>Then, in our renderless <code>MultipleImageSelector.vue</code> component:</p>
+<p>MultipleImageSelector.vue:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">export</span><span class="w"> </span><span class="n">default</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">props</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s1">&#39;images&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">&#39;selected-classes&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">&#39;once-selected-classes&#39;</span>
+<span class="w">    </span><span class="p">],</span>
+
+<span class="w">    </span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">selectedImages</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="n">methods</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">selectImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">let</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImages</span><span class="o">.</span><span class="n">indexOf</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImages</span><span class="o">.</span><span class="n">splice</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImages</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="p">);</span>
+<span class="w">      </span><span class="p">},</span>
+
+<span class="w">      </span><span class="n">classes</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="w">          </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImages</span><span class="o">.</span><span class="n">indexOf</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="err">?</span>
+<span class="w">            </span><span class="n">this</span><span class="o">.</span><span class="n">selectedClasses</span><span class="w"> </span><span class="p">:</span>
+<span class="w">              </span><span class="err">`</span><span class="o">$</span><span class="p">{</span><span class="n">this</span><span class="o">.</span><span class="n">selectedImages</span><span class="o">.</span><span class="n">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="err">?</span>
+<span class="w">                 </span><span class="n">this</span><span class="o">.</span><span class="n">onceSelectedClasses</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="p">}</span><span class="err">`</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="n">render</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">this</span><span class="o">.$</span><span class="n">scopedSlots</span><span class="o">.</span><span class="n">default</span><span class="p">({</span>
+<span class="w">        </span><span class="n">images</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">images</span><span class="p">,</span>
+
+<span class="w">        </span><span class="n">inputProps</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImages</span><span class="p">,</span>
+<span class="w">        </span><span class="p">},</span>
+
+<span class="w">        </span><span class="n">imageProps</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">          </span><span class="n">selected</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">selectedImage</span><span class="p">,</span>
+<span class="w">          </span><span class="k">class</span><span class="p">:</span><span class="w"> </span><span class="n">this</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="n">image</span><span class="p">),</span>
+<span class="w">        </span><span class="p">}),</span>
+
+<span class="w">        </span><span class="n">imageEvents</span><span class="p">:</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">          </span><span class="n">click</span><span class="p">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">this</span><span class="o">.</span><span class="n">selectImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}),</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>

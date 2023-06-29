@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - Refactoring to Livewire polling</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Refactoring to Livewire polling">
+    <meta property="og:url" content="refactoring-to-livewire-polling.html">
+    <meta property="og:description" content="This article highlights replacing WebSockets with Livewire polling, providing a convenient alternative to event-driven broadcasting via WebSockets.">
+    <meta property="article:published_time" content="Friday, June 19, 2020">
+    <meta name="twitter:title" content="Refactoring to Livewire polling">
+    <meta name="twitter:description" content="This article highlights replacing WebSockets with Livewire polling, providing a convenient alternative to event-driven broadcasting via WebSockets.">
+    <meta name="description" content="This article highlights replacing WebSockets with Livewire polling, providing a convenient alternative to event-driven broadcasting via WebSockets.">
+    <meta name="twitter:image" content="posts/refactoring-to-livewire-polling/cover.jpeg">
+    <meta property="og:image" content="posts/refactoring-to-livewire-polling/cover.jpeg">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/refactoring-to-livewire-polling.html">
+	<meta property="og:title" content="Refactoring to Livewire polling">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/refactoring-to-livewire-polling/cover.jpeg">
+	<meta property="article:published_time" content="2020-06-19 00:00:00+02:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>Refactoring to Livewire polling</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/refactoring-to-livewire-polling.html">Refactoring to Livewire polling</a>
+            </h2>
+			<ul>
+				<li>Published: 19-06-2020</li>
+			</ul>
+		</header>
+
+		<p>I recently started my first developer job at <a href="https://www.enrise.com">Enrise</a> and my colleague <a href="https://jeroeng.dev">Jeroen Groenendijk</a> asked me if I wanted to participate in a side project he was planning. The envisioned Planning Poker tool should help in making estimations for development tickets / stories / epics, etc.</p>
+<p>In this blog post I want to show how we refactored our <strong>event-driven</strong> approach using <strong>WebSockets</strong> to using <a href="https://laravel-livewire.com/">Livewire</a>'s polling mechanism (<a href="https://laravel-livewire.com/docs/polling/">see docs</a>).</p>
+<p>Before diving in, I'd like to mention the articles by Freek Van der Herten which sparked my interest: <a href="https://freek.dev/1622-replacing-web-sockets-with-livewire">Replacing web sockets with Livewire</a> and <a href="https://freek.dev/1645-building-a-realtime-dashboard-powered-by-laravel-livewire-and-tailwind-2020-edition">Building a realtime dashboard (2020 edition).</a></p>
+<hr>
+<h2>Goal and working of the application</h2>
+<p>The basic flow of the application is as follows.</p>
+<ol>
+<li>On the homepage, users can create a new <code>Room</code> and invite others using a special invite link.</li>
+<li>The creator of the room ("product owner") can then enter a new "Estimation Topic" and start the <code>Estimation</code>.</li>
+<li>The other users then get to choose a card - indicating their estimation in hours - and save their estimation.</li>
+<li>After the product owner stops the estimation, all users get to see what the others have voted.</li>
+</ol>
+<p><img alt="Estimation flow" src="images/posts/refactoring-to-livewire-polling/workflow.gif"></p>
+<p>To this extend, we've created three Livewire components:</p>
+<ol>
+<li>Showing / setting the estimation topic</li>
+<li>Showing participants with their estimation values</li>
+<li>Showing the estimation cards</li>
+</ol>
+<p>I'll highlight the changes made to the Livewire component responsible for showing the cards and saving the estimation (#3 on the list).</p>
+<p>Additionally, in our initial design we used an event-driven approach using WebSockets to update the data across all participants.</p>
+<hr>
+<h2>Event-Driven (WebSockets) approach</h2>
+<p>To update the data across all participants, we initially used an event-driven approach using WebSockets. Livewire provides support for event broadcasting via <a href="https://laravel.com/docs/7.x/broadcasting#installing-laravel-echo">Laravel Echo</a> out of the box (<a href="https://laravel-livewire.com/docs/laravel-echo">documentation</a>).</p>
+<p>Part of the <code>EstimationCards</code> Livewire component is listed below, which shows the handling of incoming events in the <code>getListeners()</code> method and you can also see it fires an <code>EstimationUpdated</code> event when the participant saves their estimation.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">EstimationCards</span> <span class="k">extends</span> <span class="nx">Component</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">array</span> <span class="nv">$cardValues</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="c1">// lookup table for card values</span>
+    <span class="p">];</span>
+
+    <span class="k">public</span> <span class="nv">$member</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$room</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nx">string</span> <span class="nv">$value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nx">bool</span> <span class="nv">$cardsEnabled</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$estimation</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$selectedValue</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">render</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;livewire.estimation-cards&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">mount</span><span class="p">(</span><span class="nv">$member</span><span class="p">,</span> <span class="nv">$room</span><span class="p">)</span>
+    <span class="p">{</span>
+       <span class="c1">// Initialization of component</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getListeners</span><span class="p">()</span><span class="o">:</span> <span class="k">array</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s2">&quot;echo:rooms.</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">room</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">,EstimationCreated&quot;</span> <span class="o">=&gt;</span> <span class="s1">&#39;onEstimationCreated&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;echo:rooms.</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">room</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">,EstimationClosed&quot;</span> <span class="o">=&gt;</span> <span class="s1">&#39;onEstimationClosed&#39;</span><span class="p">,</span>
+        <span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">saveEstimate</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+    <span class="p">{</span>
+        <span class="nv">$value</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cardValues</span><span class="p">[</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">];</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="o">-&gt;</span><span class="na">addEstimate</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">member</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cardsEnabled</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">canSaveEstimate</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+
+        <span class="nx">event</span><span class="p">(</span><span class="k">new</span> <span class="nx">EstimationUpdated</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">onEstimationCreated</span><span class="p">(</span><span class="k">array</span> <span class="nv">$event</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// set $this-&gt;estimation</span>
+        <span class="c1">// set $this-&gt;cardsEnabled</span>
+        <span class="c1">// set $this-&gt;canSaveEstimate</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">onEstimationClosed</span><span class="p">(</span><span class="k">array</span> <span class="nv">$event</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// modify properties...</span>
+    <span class="p">}</span>
+
+   <span class="c1">// other methods...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The component shares its state via the numerous public properties with the accompanying view as defined in the <code>render()</code> method. As you can see from the listeners, the component actively listens to incoming events and modifies this state accordingly. This new state - <em>e.g.</em> showing the cards whenever receiving a <code>EstimationCreated</code> event - is synced across all participants.</p>
+<p>Although this approach works fine, after reading the documentation on Livewire's polling mechanism we decided to try to refactor using this seemingly lighter and simpler approach.</p>
+<hr>
+<h2>Refactor to using Livewire polling</h2>
+<p>Livewire offers a <code>wire:poll</code> directive, which can be used to "refresh" a component within a certain interval (default: 2s). Be sure to check out the <a href="https://laravel-livewire.com/docs/polling/">Livewire documentation</a> to see all available options.</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">wire:poll</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>The component will refresh every two seconds<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>Using this approach, the public properties we've defined earlier on the Livewire component will not be automatically updated. The trick here, is to share the variables as a function.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">EstimationCards</span> <span class="k">extends</span> <span class="nx">Component</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">render</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">view</span><span class="p">(</span><span class="s1">&#39;livewire.estimation-cards&#39;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="s1">&#39;estimation&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="p">(),</span>
+            <span class="s1">&#39;cardsEnabled&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cardsEnabled</span><span class="p">(),</span>
+            <span class="s1">&#39;selectedValue&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">selectedValue</span><span class="p">(),</span>
+        <span class="p">]);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">estimation</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">optional</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">room</span><span class="o">-&gt;</span><span class="na">activeEstimation</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">cardsEnabled</span><span class="p">()</span>
+    <span class="p">{</span>
+         <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">memberHasEstimated</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">selectedValue</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="p">()</span> <span class="o">||</span> <span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">estimates</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nv">$estimate</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">estimation</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">estimates</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;member_id&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">member</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">first</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="nv">$estimate</span> <span class="o">?</span> <span class="nv">$estimate</span><span class="p">[</span><span class="s1">&#39;points&#39;</span><span class="p">]</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now, whenever the component is "refreshed" due to the polling interval, the shared variables will be recalculated and therefore updated on the side of all our participants.</p>
+<p>As we're providing the variables as functions to the view, we also removed the previously declared properties <code>$estimation</code>, <code>$cardsEnabled</code> and <code>$selectedValue</code>.</p>
+<p>This refactor eliminates the need for listening to events completely, and the <code>getListeners()</code> method and the corresponding <code>onSomeEvent()</code> methods were removed.</p>
+<p>The blade view for the livewire component now looks as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">wire:poll</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">wire:submit</span><span class="err">.</span><span class="na">prevent</span><span class="o">=</span><span class="s">&quot;saveEstimate&quot;</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;flex px-4 mb-12&quot;</span><span class="p">&gt;</span>
+        @foreach ($cardValues as $description =&gt; $value)
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;estimation-card-container flex-grow inline-flex flex-column justify-content-center align-content-center mr-2&quot;</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;radio&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;card-{{ $description }}&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;estimation&quot;</span> <span class="na">wire:model</span><span class="o">=</span><span class="s">&quot;value&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;{{ $description }}&quot;</span> <span class="err">{{</span> <span class="err">$</span><span class="na">cardsEnabled</span> <span class="err">?</span> <span class="err">&#39;&#39;</span> <span class="na">:</span> <span class="err">&#39;</span><span class="na">disabled</span><span class="err">&#39;</span> <span class="err">}}</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">label</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;estimation-card cursor-pointer {{ $selectedValue == $value  ? &#39;estimation-card-selected&#39; : &#39;&#39; }}&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;background-image: url(&#39;/images/cards/card{{ $description }}.png&#39;);&quot;</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;card-{{ $description }}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        @endforeach
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;justify-center flex py-3&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;enrise-button {{ $cardsEnabled ? &#39;&#39; : &#39;opacity-50 cursor-not-allowed&#39; }}&quot;</span> <span class="err">{{</span> <span class="err">$</span><span class="na">cardsEnabled</span> <span class="err">?</span> <span class="err">&#39;&#39;</span> <span class="na">:</span> <span class="err">&#39;</span><span class="na">disabled</span><span class="err">&#39;</span> <span class="err">}}</span><span class="p">&gt;</span>
+                Save estimation
+            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+
+<p>Without specifying a polling interval, all Livewire components within the participants browsers will pull in data every 2 seconds. If there are any updates, their DOM will be updated and reflect the changes.</p>
+<hr>
+<h2>Conclusion</h2>
+<p>I hope this post could offer some insight in the possibilities of using Livewire's <code>wire:poll</code> mechanism for updating components across multiple viewers.</p>
+<ul>
+<li>As a downside is that polling makes numerous Ajax calls to the backend and requires the execution of more queries than probably necessary.</li>
+<li>However, the code does end up quite a bit lighter and considering that Livewire pauses polling when a tab is not currently actively focused, makes this refactor absolutely worth it in my opinion.</li>
+</ul>
+<p>In the refactor of the actual application, we could remove all three <code>Event</code> classes and almost 300 (!) lines of code in total resulting in more expressive and better maintainable code.</p>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>

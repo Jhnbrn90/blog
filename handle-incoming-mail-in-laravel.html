@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="author" content="John Braun">
+
+
+        <title>John Braun // Blog - Handle incoming mail in Laravel</title>
+
+        <!-- FAVICON -->
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://johnbraun.nl/theme/css/style.css">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+        <!-- Custom CSS -->
+        	<link rel="stylesheet" href="https://johnbraun.nl/theme/css/colors/blue.css" id="colors">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://johnbraun.nl/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Handle incoming mail in Laravel">
+    <meta property="og:url" content="handle-incoming-mail-in-laravel.html">
+    <meta property="og:description" content="Handle incoming e-mails in your Laravel application using Laravel Mailbox (by Marcel Pociot) and Mailgun.">
+    <meta property="article:published_time" content="Monday, July 29, 2019">
+    <meta name="twitter:title" content="Handle incoming mail in Laravel">
+    <meta name="twitter:description" content="Handle incoming e-mails in your Laravel application using Laravel Mailbox (by Marcel Pociot) and Mailgun.">
+    <meta name="description" content="Handle incoming e-mails in your Laravel application using Laravel Mailbox (by Marcel Pociot) and Mailgun.">
+    <meta name="twitter:image" content="posts/incoming-mail-laravel-mailbox/cover.png">
+    <meta property="og:image" content="posts/incoming-mail-laravel-mailbox/cover.png">
+	          <meta property="og:locale" content="">
+			<meta property="og:site_name" content="John Braun // Blog">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://johnbraun.nl/handle-incoming-mail-in-laravel.html">
+	<meta property="og:title" content="Handle incoming mail in Laravel">
+	<meta property="og:description" content="">
+       <meta property="og:image" content="https://johnbraun.nl/posts/incoming-mail-laravel-mailbox/cover.png">
+	<meta property="article:published_time" content="2019-07-29 00:00:00+02:00">
+	</head>
+	<body>
+		<header id="header">
+			<!-- Container -->
+			<div class="container">
+				<!-- Logo / Mobile Menu -->
+				<div class="five columns">
+					<div id="textlogo">
+						<h1><a href="https://johnbraun.nl/">John Braun // Blog</a></h1>
+					</div>
+				</div>
+						<!-- Navigation
+				================================================== -->
+				<div class="eleven columns">
+
+					<nav id="navigation" class="menu">
+						<ul id="responsive">
+
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+
+
+							        <li><a href="https://johnbraun.nl/pages/about.html">About</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<!-- Container / End -->
+		</header>
+		<!-- Header / End -->
+
+		<!-- Breadcrumbs Container-->
+		<div id="content-wrapper">
+			<section id="titlebar">
+				<!-- Container -->
+				<div class="container">
+				<div class="thirteen columns">
+					<nav id="breadcrumbs">
+						<ul>
+							<li>You are here:</li>
+							<li><a href="https://johnbraun.nl/">Home</a></li>
+<li>Handle incoming mail in Laravel</li>
+						</ul>
+					</nav>
+				</div>
+				</div>
+				<!-- Container / End -->
+			</section>
+
+			<div class="container">
+        <div class="twelve alt columns">
+<article class="post" style="margin: 0; border: 0;">
+	<section class="post-content">
+		<header class="meta">
+            <h2>
+                <a href="https://johnbraun.nl/handle-incoming-mail-in-laravel.html">Handle incoming mail in Laravel</a>
+            </h2>
+			<ul>
+				<li>Published: 29-07-2019</li>
+			</ul>
+		</header>
+
+		<h2>Introduction</h2>
+<p><strong>Sending</strong> e-mails with laravel couldn't be simpler using the Mail facade, but what if you want to act on <strong>incoming</strong> e-mails instead?</p>
+<p>For example, if you want to build a <strong>helpdesk</strong> system, where users can respond to their tickets directly via e-mail. Or maybe you want to publish posts to your <strong>blog</strong> via e-mail.</p>
+<p>That's where the 📬 <a href="https://docs.beyondco.de/laravel-mailbox/"><strong>Laravel Mailbox</strong> </a>package by <a href="https://marcelpociot.de/">Marcel Pociot</a> comes in!</p>
+<p>In this post, I want to guide you through the steps to create an application which listens to <strong>incoming</strong> e-mails and perform an action based on its <strong><em>sender</em></strong> (from), <strong><em>recipient address</em></strong> (to) or <strong>subject</strong>. Alternatively, you can also catch <strong>all</strong> incoming mail.</p>
+<h2>Requirements</h2>
+<h3>Domain name and Server</h3>
+<p>You'll need to own a <strong>domain name</strong> with access to its DNS management, a <strong>server</strong> to host the application and a <strong>mail service</strong> that <em>listens</em> to incoming e-mail and <em>forwards</em> them to the application.</p>
+<h3>Mailgun account</h3>
+<p>Laravel Mailbox offers support for the <strong>mail services</strong> <a href="https://www.mailgun.com/">Mailgun</a>, <a href="https://sendgrid.com/">Sendgrid</a> and <a href="https://postmarkapp.com/">Postmark</a> out of the box. For this article, I chose to use <strong>Mailgun</strong> since I am most familiar with their service and I think they offer a reasonably generous free plan.</p>
+<h3>PHPUnit</h3>
+<p>Since I'll demonstrate driving out the desired functionality using TDD, you will need to have <strong>PHPUnit</strong> working on your system. If you are new to this, I'd recommend to check out <a href="https://laracasts.com/series/setup-a-mac-dev-machine-from-scratch/episodes/7">this free video</a> on Laracasts.</p>
+<p><strong>Note:</strong> references to "example.com" or "johnbraun.blog" should be replaced by your own domain.</p>
+<h2>Setting up Mailgun with your domain name</h2>
+<h3>Plans</h3>
+<p>Mailgun offers a <strong>Free plan</strong> which allows you to send 10 000 e-mails / month, limited to a sandbox domain. If you provide your payment details (credit card) you'll be upgraded to the <strong>Concept plan</strong>, which is still free but unlocks the ability to <strong>add custom domains</strong>. Be aware that you'll be charged if you send more than the 10 000 free e-mails. You're allowed to <strong>receive</strong> an <strong>unlimited</strong> number of e-mails.</p>
+<h3>Adding a domain</h3>
+<p>Visit the <em>domains</em> page in the <em>Sending</em> menu section and choose <em>Add your domain</em>. Mailgun will suggest you to use a <strong>subdomain</strong> like <em>mg.example.com</em>. However, if we want to be able to receive e-mails on info@example.com (instead of info@mg.example.com) we'll need to <strong>ignore</strong> the red warning and register <em>example.com</em>. Choose your region (EU / US) and confirm.</p>
+<p><img alt="Warning that we're not using a subdomain" src="images/posts/incoming-mail-laravel-mailbox/mailgun-warning.png"></p>
+<h3>Setting up DNS records</h3>
+<p>After adding a new domain, you'll be asked to add some DNS records:</p>
+<ul>
+<li>TXT records (2x)</li>
+<li>MX records (2x)</li>
+<li>CNAME record (1x)</li>
+</ul>
+<p>Those are (most probably) managed by the company you've registered your domain name with.</p>
+<p>As long as your registrar supports manual configuration of the DNS records it doesn't matter which company you choose. Personally, I use <a href="https://www.hover.com">Hover</a> for registration of my <strong>domains</strong> and <a href="https://www.digitalocean.com">DigitalOcean</a> to mange the <strong>DNS settings</strong> (by directing the nameservers to DigitalOcean) since my <strong>server</strong> lives there as well.</p>
+<p><img alt="DNS records" src="images/posts/incoming-mail-laravel-mailbox/DNS-records.png"></p>
+<p>Check out these guides for specific configuring of <strong>DNS records</strong> at <a href="https://www.godaddy.com/help/manage-dns-zone-files-680">GoDaddy</a>, <a href="https://www.namecheap.com/support/knowledgebase/article.aspx/579/2237/which-record-type-option-should-i-choose-for-the-information-im-about-to-enter">NameCheap</a>, <a href="http://www.networksolutions.com/support/how-to-manage-advanced-dns-records/">Network Solutions</a>, <a href="https://support.rackspace.com/how-to/set-up-dns-records-for-cloud-office-email/">Rackspace Email &amp; Apps</a>, <a href="https://support.rackspace.com/how-to/creating-dns-records-with-cloud-dns/">Rackspace Cloud DNS</a>, <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-creating.html">Amazon Route 53</a> and <a href="https://www.digitalocean.com/docs/networking/dns/how-to/manage-records/">Digital Ocean</a>.</p>
+<h3>TXT records</h3>
+<p>To be able to send e-mail with Mailgun, you'll need to configure two TXT records.</p>
+<p><img alt="Expected TXT records" src="images/posts/incoming-mail-laravel-mailbox/expected-TXT-records.png"></p>
+<p>First, using the root hostname (using an "@" in DigitalOcean) with the value "<code>v=spf1 include:eu.mailgun.org ~all</code>".</p>
+<p><img alt="Adding root TXT record" src="images/posts/incoming-mail-laravel-mailbox/root-TXT-record.png"></p>
+<p>The second TXT record indicates your domain key using the provided subdomain prefix, "<strong>mailo._domainkey</strong>" in the example below. The specific subdomain you'll need to create will vary.</p>
+<p><img alt="Adding domain key TXT record" src="images/posts/incoming-mail-laravel-mailbox/domain-TXT-record.png"></p>
+<h3>MX records</h3>
+<p>Next, to be able to receive e-mails, we'll need to add two MX records.</p>
+<p><img alt="Expected MX records" src="images/posts/incoming-mail-laravel-mailbox/expected-MX-records.png"> </p>
+<p>Since we're not using a subdomain, we'll add those MX records on our root hostname, which is shown below (for DigitalOcean). <strong>Important:</strong> if you <strong>do</strong> use a subdomain, you'll need to configure the MX records for the subdomain.</p>
+<p><img alt="Adding MX records" src="images/posts/incoming-mail-laravel-mailbox/adding-MX-records.png"></p>
+<p>Repeat this step for the other (<strong>mxb</strong>.eu.mailgun.org) MX record.</p>
+<h3>CNAME record</h3>
+<p>Lastly, add a CNAME record for the "email" subdomain: </p>
+<p><img alt="Expected CNAME record" src="images/posts/incoming-mail-laravel-mailbox/expected-CNAME-record.png"></p>
+<p><img alt="Adding CNAME record" src="images/posts/incoming-mail-laravel-mailbox/adding-CNAME-record.png"></p>
+<h3>Verify DNS Settings</h3>
+<p>After you've configured the DNS records, hit 'verify DNS settings' on the Mailgun page after which a green tick should appear, indicating that everything was properly configured.</p>
+<p>You're now ready to send and receive incoming mail on this domain.</p>
+<h2>Installing Laravel Mailbox</h2>
+<p>Pull in the <a href="https://github.com/beyondcode/laravel-mailbox">Laravel Mailbox</a> package in your Laravel app using composer.</p>
+<div class="highlight"><pre><span></span><code>composer<span class="w"> </span>require<span class="w"> </span>beyondcode/laravel-mailbox
+</code></pre></div>
+
+<p>Following the installation instructions, at the <a href="https://docs.beyondco.de/laravel-mailbox/1.0/getting-started/installation.html">documentation</a> page:</p>
+<p><strong>Publish the migrations</strong></p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>vendor:publish<span class="w"> </span>--provider<span class="o">=</span><span class="s2">&quot;BeyondCode\Mailbox\MailboxServiceProvider&quot;</span><span class="w"> </span>--tag<span class="o">=</span><span class="s2">&quot;migrations&quot;</span>
+</code></pre></div>
+
+<p><strong>Run the migrations</strong></p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>migrate
+</code></pre></div>
+
+<p><strong>Publish the config file</strong></p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>vendor:publish<span class="w"> </span>--provider<span class="o">=</span><span class="s2">&quot;BeyondCode\Mailbox\MailboxServiceProvider&quot;</span><span class="w"> </span>--tag<span class="o">=</span><span class="s2">&quot;config&quot;</span>
+</code></pre></div>
+
+<p>Now that the package is ready, let's dive into driving out some functionality using TDD (Test Driven Development).</p>
+<h2>Testing</h2>
+<p>For this demo we will simply record a received e-mail in a <code>received_mails</code> table containing a 'sender', 'subject' and 'body' of the e-mail. We'll drive out this behaviour using a feature test.</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>make:test<span class="w"> </span>IncomingMailTest
+</code></pre></div>
+
+<h3>Setting up our test</h3>
+<p><strong>Environment file</strong></p>
+<p>To be able to test this package locally, instead of receiving a call to the Mailgun webhook, the Laravel Mailbox package can listen to e-mails sent to the <strong>log</strong>. Therefore, we can specify <code>MAIL_DRIVER=log</code> and <code>MAILBOX_DRIVER=log</code> in our .env file.</p>
+<p><strong>Using the log driver in our tests</strong></p>
+<p>In the setup method of our test, we have to explicitly tell PHPunit to use the log driver, otherwise it will default to the "array" driver.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">IncomingMailTest</span> <span class="k">extends</span> <span class="nx">TestCase</span> <span class="p">{</span>
+   <span class="k">use</span> <span class="nx">RefreshDatabase</span><span class="p">;</span>
+
+   <span class="k">public</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+   <span class="p">{</span>
+       <span class="k">parent</span><span class="o">::</span><span class="na">setUp</span><span class="p">();</span>
+
+       <span class="nx">config</span><span class="p">([</span><span class="s1">&#39;mail.driver&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;log&#39;</span><span class="p">]);</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Writing a test by wishful thinking</h3>
+<p>Let's write a test that will verify incoming e-mails are saved to the database, so we can later act on them. <em>Note:</em> <em>not all of the code described exists yet, we'll let our test tell us to implement / write the missing pieces</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Tests\Feature</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">App\ReceivedMail</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">App\Mail\TestMail</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Illuminate\Support\Facades\Mail</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">IncomingEmailTest</span> <span class="k">extends</span> <span class="nx">TestCase</span> <span class="p">{</span>
+
+  <span class="o">+</span> <span class="nx">setUp</span><span class="p">()</span> <span class="o">...</span>
+
+  <span class="sd">/** @test **/</span>
+  <span class="k">function</span> <span class="nf">incoming_mail_is_saved_to_the_mails_table</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Given: we have an e-mail﻿</span>
+    <span class="nv">$email</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TestMail</span><span class="p">(</span>
+            <span class="nv">$sender</span> <span class="o">=</span> <span class="s1">&#39;sender@example.com&#39;</span><span class="p">,</span>
+            <span class="nv">$subject</span> <span class="o">=</span> <span class="s1">&#39;Test E-mail&#39;</span><span class="p">,</span>
+            <span class="nv">$body</span> <span class="o">=</span> <span class="s1">&#39;Some example text in the body&#39;</span>
+        <span class="p">);</span>
+
+    <span class="c1">// When: we receive that e-mail</span>
+    <span class="nx">Mail</span><span class="o">::</span><span class="na">to</span><span class="p">(</span><span class="s1">&#39;incoming@johnbraun.blog&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$email</span><span class="p">);</span>
+
+    <span class="c1">// Then: we assert the e-mails (meta)data was stored</span>
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertCount</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">ReceivedMail</span><span class="o">::</span><span class="na">all</span><span class="p">());</span>
+
+    <span class="nx">tap</span><span class="p">(</span><span class="nx">ReceivedMail</span><span class="o">::</span><span class="na">first</span><span class="p">(),</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$mail</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$sender</span><span class="p">,</span> <span class="nv">$subject</span><span class="p">,</span> <span class="nv">$body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="nv">$sender</span><span class="p">,</span> <span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">sender</span><span class="p">);</span>    
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="nv">$subject</span><span class="p">,</span> <span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">subject</span><span class="p">);</span>    
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertStringContainsString</span><span class="p">(</span><span class="nv">$body</span><span class="p">,</span> <span class="nv">$mail</span><span class="o">-&gt;</span><span class="na">body</span><span class="p">);</span>    
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Note:</strong> Are you new to Laravel's <code>tap()</code> function? Check out <a href="https://medium.com/@taylorotwell/tap-tap-tap-1fc6fc1f93a6">Taylor Otwell's post</a> on one of his favorite helpers.</p>
+<h3>Create a mailable</h3>
+<p>The first error we'll ecounter is that there is no IncomingTestMail mailable class, so let's create it:</p>
+<p>php artisan make:mail TestMail --markdown="emails.tests.testmail"</p>
+<p>Open up the mailable, and accept the sender's address, subject and body in the constructor and store them in the public properties.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">TestMail</span> <span class="k">extends</span> <span class="nx">Mailable</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$sender</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$subject</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$body</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$sender</span><span class="p">,</span> <span class="nv">$subject</span><span class="p">,</span> <span class="nv">$body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sender</span> <span class="o">=</span> <span class="nv">$sender</span><span class="p">;</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">subject</span> <span class="o">=</span> <span class="nv">$subject</span><span class="p">;</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">body</span> <span class="o">=</span> <span class="nv">$body</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">build</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span>
+            <span class="o">-&gt;</span><span class="na">from</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sender</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">subject</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">subject</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">markdown</span><span class="p">(</span><span class="s1">&#39;emails.tests.testmail&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>In the markdown e-mail, echo out the body:</p>
+<div class="highlight"><pre><span></span><code>@component(&#39;mail::message&#39;)
+
+{{ $body }}
+
+Thanks,<span class="p">&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
+{{ config(&#39;app.name&#39;) }}
+@endcomponent
+</code></pre></div>
+
+<h3>Create a ReceivedMail model</h3>
+<p>If we run the test again at this stage, we're missing a ReceivedMail model, so let's create it, together with a migration.</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>make:model<span class="w"> </span>ReceivedMail<span class="w"> </span>-m
+</code></pre></div>
+
+<p>First, make all properties on our model fillable.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">ReceivedMail</span> <span class="k">extends</span> <span class="nx">Model</span> <span class="p">{</span>
+    <span class="k">protected</span> <span class="nv">$guarded</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Next, add the 'sender', 'subject' and 'body' columns to our received_mails_table migration file.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">up</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Schema</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="s1">&#39;received_mails&#39;</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nx">Blueprint</span> <span class="nv">$table</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">bigIncrements</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">string</span><span class="p">(</span><span class="s1">&#39;sender&#39;</span><span class="p">);</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">string</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">);</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">text</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">);</span>
+        <span class="nv">$table</span><span class="o">-&gt;</span><span class="na">timestamps</span><span class="p">();</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Run the migration</p>
+<div class="highlight"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>migrate
+</code></pre></div>
+
+<h3>Defining a Mailbox</h3>
+<p>Running the test again, shows <code>Failed asserting that actual size 0 matches expected size 1</code>. This makes sense, since we don't act on incoming mail yet. We can easily set up a listener in the AppServiceProvider, referring incoming e-mails addressed <strong>to</strong> a certain address (<code>Mailbox::to()</code>) or <strong>coming from</strong> a specific address (<code>Mailbox::from()</code>) to a <strong>callback</strong> or - as we'll use in this case - an <strong>invokable</strong> MailHandler class. To learn all of the available options, check out <a href="https://docs.beyondco.de/laravel-mailbox/1.0/basic-usage/mailboxes.html#matching-sender-emails">this page</a> in the documentation.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">use</span> <span class="nx">App\MailHandler</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">BeyondCode\Mailbox\Facades\Mailbox</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">AppServiceProvider</span> <span class="k">extends</span> <span class="nx">ServiceProvider</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">boot</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">Mailbox</span><span class="o">::</span><span class="na">to</span><span class="p">(</span><span class="s1">&#39;incoming@johnbraun.blog&#39;</span><span class="p">,</span> <span class="nx">MailHandler</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong><em>Note:</em></strong> <em>you are able to use parameters (</em><a href="https://docs.beyondco.de/laravel-mailbox/1.0/basic-usage/mailboxes.html#using-parameters"><em>see docs</em></a><em>) in the matching rules, which will be passed down to the handling class as additional arguments to the</em> <code>*InboundEmail $email*</code><em>.</em></p>
+<h3>Create an invokable MailHandler class</h3>
+<p>In the app folder, let's create MailHandler.php and set up a magic <code>__invoke()</code> method, which gets passed in an <code>InboundEmail</code> object where we can call a from(), subject() and text() methods to obtain the corresponding data. All <a href="https://docs.beyondco.de/laravel-mailbox/1.0/basic-usage/handling.html#available-methods">available methods</a> are listed in the documentation.</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">App</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">App\ReceivedMail</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">BeyondCode\Mailbox\InboundEmail</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">MailHandler</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="fm">__invoke</span><span class="p">(</span><span class="nx">InboundEmail</span> <span class="nv">$email</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">ReceivedMail</span><span class="o">::</span><span class="na">create</span><span class="p">([</span>
+            <span class="s1">&#39;sender&#39;</span>    <span class="o">=&gt;</span> <span class="nv">$email</span><span class="o">-&gt;</span><span class="na">from</span><span class="p">(),</span>
+            <span class="s1">&#39;subject&#39;</span>   <span class="o">=&gt;</span> <span class="nv">$email</span><span class="o">-&gt;</span><span class="na">subject</span><span class="p">(),</span>
+            <span class="s1">&#39;body&#39;</span>      <span class="o">=&gt;</span> <span class="nv">$email</span><span class="o">-&gt;</span><span class="na">text</span><span class="p">(),</span>
+        <span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Our test is passing</h3>
+<p>If we run our test now, it passes which means we can now listen for e-mails to 'incoming@our-domain.com', however we still first need to setup an endpoint for Mailgun, which we'll do in the next section.</p>
+<h2>Setting up for production</h2>
+<h3>Installing GuzzleHTTP</h3>
+<p>Since Laravel requires Guzzle for working with the Mailgun driver, let's first install this dependency:</p>
+<div class="highlight"><pre><span></span><code>composer<span class="w"> </span>require<span class="w"> </span>guzzlehttp/guzzle
+</code></pre></div>
+
+<h3>Configuring a webhook in Mailgun</h3>
+<p>We're almost ready to receive inbound e-mails on our domain, we just need to configure Mailgun to call our application whenever it receives mail. To do this, first push your application to the domain and make sure it is accessible (externally).</p>
+<p>In Mailgun, hit up the "receiving" link in the menu and choose "create route". Here we can specify to either catch all e-mails, or a selection. Let's only catch e-mails sent to "incoming@johnbraun.blog".</p>
+<p><img alt="Route for incoming mail" src="images/posts/incoming-mail-laravel-mailbox/route-incoming-mail.png"></p>
+<p>Check "store and notify" and fill in the endpoint for the Mailgun driver (as <a href="https://docs.beyondco.de/laravel-mailbox/1.0/drivers/drivers.html#mailgun">described here</a>): <code>https://****your domain****/laravel-mailbox/mailgun/mime</code>. Give your route a description and hit the create button.</p>
+<h3>Update production environment variables</h3>
+<p>Lastly, we'll need to specify the Mailgun driver in the environment file. Add/update the following properties in your .env file. The Mailgun secret key is obtained from the "API security" page under the "settings" tab. You'll need to provide the private key.</p>
+<div class="highlight"><pre><span></span><code><span class="n">MAILBOX_DRIVER</span><span class="o">=</span><span class="n">mailgun</span>
+<span class="n">MAILBOX_MAILGUN_KEY</span><span class="o">=</span><span class="p">......</span>
+
+<span class="n">MAIL_DRIVER</span><span class="o">=</span><span class="n">mailgun</span>
+<span class="n">MAILGUN_DOMAIN</span><span class="o">=</span><span class="n">johnbraun</span><span class="p">.</span><span class="n">blog</span>
+<span class="n">MAILGUN_SECRET</span><span class="o">=</span><span class="p">........</span>
+<span class="n">MAILGUN_ENDPOINT</span><span class="o">=</span><span class="s">&quot;api.eu.mailgun.net&quot;</span>
+</code></pre></div>
+
+<p><img alt="API settings page" src="images/posts/incoming-mail-laravel-mailbox/API-settings.png"></p>
+<h2>Ready for action!</h2>
+<p>At this stage, you're able to send mails to your defined address (in our demo case 'incoming@johnbraun.blog') after which a new <code>ReceivedMail</code> model wil be saved to the database.</p>
+<p>Don't forget, that there are a lot of other things you could do. To name a few: it can handle attachments, send an auto-reply, capture the HTML contents of the e-mail, etc.</p>
+<p>Check the available methods in the Laravel Mailbox <a href="https://docs.beyondco.de/laravel-mailbox/1.0/basic-usage/handling.html#handling-inbound-emails">documentation</a>.</p>
+<p>I hope this post helped you to make a start if you're interested to start receiving and handling inbound e-mail.</p>
+
+<div class="sharing">
+</div>
+<hr>
+
+	</section>
+	<div class="clearfix"></div>
+
+</article>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="four columns">
+
+
+
+
+                
+        </div>
+			</div>
+			<!-- Container / End -->
+		</div>
+		<!-- Content Wrapper / End -->
+
+	<!-- Javascripts -->
+	<script src="https://johnbraun.nl/theme/js/jquery.min.js"></script>
+	</body>
+</html>
