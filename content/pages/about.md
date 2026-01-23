@@ -6,7 +6,7 @@ I'm John Braun, living in The Netherlands. I'm a software developer working most
 
 This blog is built with [Pelican](https://getpelican.com/) and open source [on GitHub](https://github.com/Jhnbrn90/johnbraun.blog).
 
-You can find me on [Twitter](https://twitter.com/@jhnbrn90), [LinkedIn,](https://nl.linkedin.com/in/jbraunnl) [GitHub](https://github.com/jhnbrn90) and the [Laracasts forum](https://laracasts.com/@JohnBraun). Since May 2019 I'm a [Laravel Certified](https://exam.laravelcert.com/is/john-braun/certified-since/2019-05-31?) developer.
+You can find me on [LinkedIn,](https://nl.linkedin.com/in/jbraunnl) [GitHub](https://github.com/jhnbrn90) and the [Laracasts forum](https://laracasts.com/@JohnBraun). Since May 2019 I'm a [Laravel Certified](https://exam.laravelcert.com/is/john-braun/certified-since/2019-05-31?) developer.
 
 Previously, I did my PhD research in Organic Chemistry within the [Synthetic Organic Chemistry & Catalysis group](https://vu.nl/en/about-vu/more-about/synthetic-organic-chemistry-catalysis-socc-nl) (previously SyBOrCh) at the [Vrije Universiteit Amsterdam](https://www.vu.nl).
 
